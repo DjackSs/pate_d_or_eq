@@ -184,7 +184,7 @@ local.properties
 
 src/main/java/hibernate.cfg.xml
 src/main/webapp/META-INF/context.xml
-# src/main/resources/application.properties
+src/main/resources/application.properties
 
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
