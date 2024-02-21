@@ -13,14 +13,14 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Entity
-@Table(name= "Users")
+
+@Entity @Table(name = "Users")
 @Data
-public class User 
-{
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+public class User {
+
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
+	
 	private String name;
 	private String lastname;
 	private String email;
@@ -30,5 +30,4 @@ public class User
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_user")
 	private List<Message> messages;
-
 }

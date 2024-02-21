@@ -13,12 +13,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="Reservations")
 @Data
-public class Reservation 
-{
+public class Reservation {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -36,5 +36,4 @@ public class Reservation
 	@JoinColumn(name = "id_user")
 	private User user;
 	
-
 }
