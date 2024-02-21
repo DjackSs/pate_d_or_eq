@@ -15,7 +15,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Entity @Table(name = "orders")
+@Entity @Table(name = "Orders")
 @Data
 public class RestaurantOrder {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
