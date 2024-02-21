@@ -15,4 +15,15 @@ public class RestaurantOrderBLL {
 	public List<RestaurantOrder> getAll() {
 		return (List<RestaurantOrder>) restaurantOrderDao.findAll();
 	}
+	
+	public RestaurantOrder getById(int id) {
+		return restaurantOrderDao.findById(id).get();
+	}
+	
+	public void save(RestaurantOrder restaurantOrder) {
+		restaurantOrderDao.save(restaurantOrder);
+	}
+	
+	public void delete(int id) { restaurantOrderDao.deleteById(id); }
+	
 }

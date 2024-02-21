@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -112,6 +114,32 @@ public class EquipeRest
 	@GetMapping("/commandes")
 	public List<RestaurantOrder> getAll() {
 		return restaurantOrderBll.getAll();
+	}
+	
+	@GetMapping("/commandes/{id}")
+	public ResponseEntity<RestaurantOrder> getById(@PathVariable("id") int id) {
+		return new ResponseEntity<>(restaurantOrderBll.getById(id), HttpStatus.OK);
+	}
+	
+	@PostMapping("/commandes")
+	public ResponseEntity<RestaurantOrder> insert(@RequestBody RestaurantOrder restaurantOrder) {
+		restaurantOrderBll.save(restaurantOrder);
+		return new ResponseEntity<>(restaurantOrder, HttpStatus.CREATED);
+	}
+	
+	@PutMapping("/commandes/{id}")
+	public ResponseEntity<Void> updateState(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) {
+		RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
+		restaurantOrderToUpdate.setState(restaurantOrder.getState());
+		restaurantOrderBll.save(restaurantOrderToUpdate);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/commandes/{id}")
+	public ResponseEntity<RestaurantOrder> delete(@PathVariable("id") int id) {
+		RestaurantOrder restaurantOrder = restaurantOrderBll.getById(id);
+		restaurantOrderBll.delete(id);
+		return new ResponseEntity<>(restaurantOrder, HttpStatus.OK);
 	}
 	
 }
