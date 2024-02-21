@@ -50,6 +50,7 @@ CREATE TABLE Users (
     lastname        varchar(40)     not null,
     email           varchar(50)     not null,
     password        varchar(150)    not null,
+    token			varchar(255)	null,
     role            char(4)         not null default 'cus',
 
     check( role in('cust', 'admi', 'staf'))

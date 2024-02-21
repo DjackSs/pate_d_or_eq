@@ -25,6 +25,7 @@ public class User {
 	private String lastname;
 	private String email;
 	private String password;
+	private String token;
 	private String role;
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
