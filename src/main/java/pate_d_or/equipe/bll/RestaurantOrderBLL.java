@@ -16,8 +16,19 @@ public class RestaurantOrderBLL {
 		return (List<RestaurantOrder>) restaurantOrderDao.findAll();
 	}
 	
+	public RestaurantOrder getById(int id) {
+		return restaurantOrderDao.findById(id).get();
+	}
+
 	public Float getOrderBillById(int id)
 	{
 		return this.restaurantOrderDao.getOrderBillById(id);
 	}
+	
+	public void save(RestaurantOrder restaurantOrder) {
+		restaurantOrderDao.save(restaurantOrder);
+	}
+	
+	public void delete(int id) { restaurantOrderDao.deleteById(id); }
+
 }
