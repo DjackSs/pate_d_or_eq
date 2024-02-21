@@ -18,41 +18,39 @@ import pate_d_or.equipe.entities.User;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/users")
+@RequestMapping("/pate_d_or")
 public class UserRest {
 
 	@Autowired private UserBLL userbll;
 
-	@GetMapping
+	@GetMapping("/users")
 	public Iterable<User> getAllUsers() {
 		return userbll.getAllUsers();
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/users/{id}")
 	public User getUserById(@PathVariable("id") int id) {
 		return userbll.getUserById(id);
 	}
 
-	@GetMapping("/{email}")
-	public User getUserByEmailAndPassword(@PathVariable("email") String email, String password) {
-		return userbll.getUserByEmailAndAdress(email, password);
-	}
-	
-
-	@PostMapping
-	public ResponseEntity<Void> insertUser(@RequestBody User user) {
-		userbll.saveOrUpdate(user);
-		return new ResponseEntity<>(HttpStatus.CREATED);
+	@PostMapping("/users/{id}")
+	public ResponseEntity<User> insertUser(@PathVariable("id") int id, @RequestBody User user) {
+		User operator = userbll.getUserById(id);
+		if ("admi".equals(operator.getRole())) {
+			userbll.saveOrUpdate(user);
+			return new ResponseEntity<>(user, HttpStatus.CREATED);
+		}
+		return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping("/users/{id}")
 	public ResponseEntity<Void> updateUser(@PathVariable("id") int id, @RequestBody User user) {
 		user.setId(id);
 		userbll.saveOrUpdate(user);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/users/{id}")
 	public ResponseEntity<Void> delete(int id) {
 		userbll.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.OK);
