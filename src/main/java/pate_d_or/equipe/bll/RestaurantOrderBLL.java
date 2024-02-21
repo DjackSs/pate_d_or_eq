@@ -15,4 +15,9 @@ public class RestaurantOrderBLL {
 	public List<RestaurantOrder> getAll() {
 		return (List<RestaurantOrder>) restaurantOrderDao.findAll();
 	}
+	
+	public Float getOrderBillById(int id)
+	{
+		return this.restaurantOrderDao.getOrderBillById(id);
+	}
 }
