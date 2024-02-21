@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pate_d_or.equipe.bll.ReservationBLL;
+import pate_d_or.equipe.bll.RestaurantTableBLL;
 import pate_d_or.equipe.entities.Reservation;
+import pate_d_or.equipe.entities.RestaurantTable;
 
 @RestController
 @CrossOrigin
@@ -23,6 +25,9 @@ public class EquipeRest
 {
 	@Autowired
 	private ReservationBLL reservationBLL;
+	
+	@Autowired
+	private RestaurantTableBLL retaurantTableBLL;
 	
 	//=====================================================
 	//reservation
@@ -51,14 +56,52 @@ public class EquipeRest
 		//Change uniquement le status de la réservation
 		updateReservation.setState(reservation.getState());
 		
+		//si le client est arrivé alors on changge aussi le status de sa table
+		if("here".equalsIgnoreCase(reservation.getState()))
+		{
+			reservation.getTable().setState("pres");
+		}
+		
 		this.reservationBLL.save(updateReservation);
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 		
 	}
 	
+	
+	
+	//=====================================================
+	//restaurantTable
+	
+	@GetMapping("/table")
+	public ResponseEntity<List<RestaurantTable>> findAll()
+	{
+		return new ResponseEntity<>(this.retaurantTableBLL.findAll(), HttpStatus.OK);
+	}
+	
 	//-----------------------------------------
 	
+	@GetMapping("/table/{id}")
+	public ResponseEntity<RestaurantTable> findById(@PathVariable("id") int id)
+	{
+		return new ResponseEntity<>(this.retaurantTableBLL.findById(id), HttpStatus.OK);
+	}
+	
+	//-----------------------------------------
+	
+	@PutMapping("/table/{id}")
+	public ResponseEntity<Void> updateRestaurantTable(@PathVariable("id") int id, @RequestBody RestaurantTable restaurantTable)
+	{
+		RestaurantTable updateRestaurantTable = this.retaurantTableBLL.findById(id);
+		updateRestaurantTable.setState(restaurantTable.getState());
+		
+		this.retaurantTableBLL.save(updateRestaurantTable);
+		
+		return new ResponseEntity<>(HttpStatus.OK);
+		
+	}
+	
+
 	
 	
 
