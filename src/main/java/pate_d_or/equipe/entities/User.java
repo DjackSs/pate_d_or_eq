@@ -1,5 +1,6 @@
 package pate_d_or.equipe.entities;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -26,6 +27,7 @@ public class User {
 	private String email;
 	private String password;
 	private String token;
+	private LocalDateTime expirationTime;
 	private String role;
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
