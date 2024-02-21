@@ -1,0 +1,38 @@
+package pate_d_or.equipe.bll;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import pate_d_or.equipe.dal.ReservationDAO;
+import pate_d_or.equipe.entities.Reservation;
+
+@Service
+public class ReservationBLL 
+{
+	@Autowired
+	private ReservationDAO reservationDAO;
+	
+	//-----------------------------------------
+	
+	public List<Reservation> findAll()
+	{
+		return (List<Reservation>) this.reservationDAO.findAll();
+	}
+	
+	//-----------------------------------------
+	
+	public Reservation findById(int id)
+	{
+		return this.reservationDAO.findById(id).get();
+	}
+	
+	//-----------------------------------------
+	
+	public void save(Reservation reservation)
+	{
+		this.reservationDAO.save(reservation);
+	}
+
+}

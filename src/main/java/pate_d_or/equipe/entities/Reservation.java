@@ -9,25 +9,31 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name= "Reservations")
-@Data @NoArgsConstructor
+@Table(name="Reservations")
+@Data
 public class Reservation {
-
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
-	@Column(name = "reservation_time", nullable = false)
+	@Column(name = "reservation_time")
 	private LocalDateTime reservationTime;
+	
 	private String state;
 	
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_table")
-	private RestaurantTable tables;
+	private RestaurantTable table;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_user")
+	private User user;
+	
 }

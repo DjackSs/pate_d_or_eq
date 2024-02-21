@@ -1,6 +1,5 @@
 package pate_d_or.equipe.entities;
 
-
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -13,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+
 
 @Entity @Table(name = "Users")
 @Data
@@ -30,9 +30,4 @@ public class User {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_user")
 	private List<Message> messages;
-	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_user")
-	private List<Reservation> reservations;
-	
 }
