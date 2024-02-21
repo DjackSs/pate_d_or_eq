@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pate_d_or.equipe.bll.ReservationBLL;
+import pate_d_or.equipe.bll.RestaurantOrderBLL;
 import pate_d_or.equipe.bll.RestaurantTableBLL;
 import pate_d_or.equipe.entities.Reservation;
+import pate_d_or.equipe.entities.RestaurantOrder;
 import pate_d_or.equipe.entities.RestaurantTable;
+
 
 @RestController
 @CrossOrigin
@@ -28,6 +31,9 @@ public class EquipeRest
 	
 	@Autowired
 	private RestaurantTableBLL retaurantTableBLL;
+	
+	@Autowired 
+	private RestaurantOrderBLL restaurantOrderBll;
 	
 	//=====================================================
 	//reservation
@@ -101,8 +107,13 @@ public class EquipeRest
 		
 	}
 	
-
+	//=====================================================
+	//restaurantOrder
+	@GetMapping("/commandes")
+	public List<RestaurantOrder> getAll() {
+		return restaurantOrderBll.getAll();
+	}
 	
-	
-
 }
+	
+

@@ -7,26 +7,22 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-@Entity
-@Table(name= "Tables")
+@Entity @Table(name = "orders")
 @Data
-public class RestaurantTable {
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+public class RestaurantOrder {
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	
-	@Column(name = "number_place")
-	private int numberPlace;
 	
 	@Column(length = 4)
 	private String state;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_restaurant")
-	private Restaurant restaurant;
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "id_table")
+	private RestaurantTable table;
+
 
 }
