@@ -111,14 +111,24 @@ public class EquipeRest
 	
 	//=====================================================
 	//restaurantOrder
+	
 	@GetMapping("/commandes")
 	public List<RestaurantOrder> getAll() {
 		return restaurantOrderBll.getAll();
 	}
 	
+		
 	@GetMapping("/commandes/{id}")
 	public ResponseEntity<RestaurantOrder> getById(@PathVariable("id") int id) {
 		return new ResponseEntity<>(restaurantOrderBll.getById(id), HttpStatus.OK);
+	}
+	
+	//-----------------------------------------
+	
+	@GetMapping("/commandes/bill/{id}")
+	public ResponseEntity<Float> getOrderBillById(@PathVariable("id") int id)
+	{
+		return new ResponseEntity<>(this.restaurantOrderBll.getOrderBillById(id), HttpStatus.OK);
 	}
 	
 	@PostMapping("/commandes")
