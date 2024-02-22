@@ -1,4 +1,5 @@
 const BASE_URL = "http://localhost:8080";
+
 let container = document.getElementById("container");
 
 loadPage();
@@ -7,17 +8,18 @@ let logout = document.getElementById("logout");
 logout.addEventListener("click", logUserOut);
 
 function loadPage() {
+
   if (!sessionStorage.getItem("token")) {
     location = "login.html";
   }
-  fetch(BASE_URL + "/protected", {
+  fetch(BASE_URL + "/pate_d_or/resa", {
     method: "GET", 
     headers: {
       "token": sessionStorage.getItem("token")
     }
   })
-  .then(response => response.text())
-  .then(content => displayContent(content));
+  .then(response => response.json())
+  .then(content => {console.log(content), displayContent(content)});
 }
 
 function displayContent(content) {
@@ -26,7 +28,7 @@ function displayContent(content) {
 
 function logUserOut() {
   fetch(BASE_URL + "/logout", {
-    method: "GET"
+    method: "GET",
     headers: {
       "token": sessionStorage.getItem("token")
     }

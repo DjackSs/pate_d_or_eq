@@ -6,17 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pate_d_or.equipe.bll.BLLException;
 import pate_d_or.equipe.bll.ReservationBLL;
 import pate_d_or.equipe.bll.RestaurantTableBLL;
+import pate_d_or.equipe.bll.UserBLL;
 import pate_d_or.equipe.entities.Reservation;
 import pate_d_or.equipe.entities.RestaurantTable;
+import pate_d_or.equipe.entities.User;
 
 @RestController
 @CrossOrigin
@@ -28,6 +33,9 @@ public class EquipeRest
 	
 	@Autowired
 	private RestaurantTableBLL retaurantTableBLL;
+	
+	@Autowired
+	private UserBLL userBLL;
 	
 	//=====================================================
 	//reservation
@@ -101,6 +109,49 @@ public class EquipeRest
 		
 	}
 	
+	//=====================================================
+	//User
+	
+	@GetMapping("/users")
+	public Iterable<User> getAllUsers() throws BLLException {
+		return userBLL.getAllUsers();
+	}
+
+	@GetMapping("/users/{id}")
+	public User getUserById(@PathVariable("id") int id) {
+		return userBLL.getUserById(id);
+	}
+
+	@PostMapping("/users/{id}")
+	public ResponseEntity<User> insertUser(@PathVariable("id") int id, @RequestBody User user) throws BLLException {
+		User operator = userBLL.getUserById(id);
+		if ("admi".equals(operator.getRole())) {
+			try {
+				userBLL.saveOrUpdate(user);
+			} catch (BLLException e) {
+				throw new BLLException("Impossible de créer un nouvel utilisateur", e);
+			}
+			return new ResponseEntity<>(user, HttpStatus.CREATED);
+		}
+		return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
+	}
+
+	@PutMapping("/users/{id}")
+	public ResponseEntity<Void> updateUser(@PathVariable("id") int id, @RequestBody User user) throws BLLException {
+		user.setId(id);
+		try {
+			userBLL.saveOrUpdate(user);
+		} catch (BLLException e) {
+			throw new BLLException("Impossible de mettre à jour l'utilisateur", e);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/users/{id}")
+	public ResponseEntity<Void> delete(int id) {
+		userBLL.deleteById(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
 	
 	

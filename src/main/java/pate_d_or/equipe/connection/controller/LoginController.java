@@ -5,11 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import pate_d_or.equipe.bll.BLLException;
 import pate_d_or.equipe.bll.UserBLL;
+import pate_d_or.equipe.dal.DALException;
 import pate_d_or.equipe.entities.User;
 
 @RestController
@@ -24,12 +27,12 @@ public class LoginController {
 	 * Renvoie un user avec son token si la connexion réussit
 	 */
 	@PostMapping
-	public ResponseEntity<User> get(@RequestParam String username, @RequestParam String password) {
-		User user = service.getByLoginAndPassword(username, password);
-		if (user == null) {
+	public ResponseEntity<User> get(@RequestBody User user) throws BLLException {
+		User userLog = service.getByLoginAndPassword(user.getEmail(), user.getPassword());
+		if (userLog == null) {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		} else {
-			return new ResponseEntity<>(user, HttpStatus.OK);
+			return new ResponseEntity<>(userLog, HttpStatus.OK);
 		}
 	}
 }
