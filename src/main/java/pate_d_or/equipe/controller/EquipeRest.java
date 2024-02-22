@@ -1,6 +1,5 @@
 package pate_d_or.equipe.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import pate_d_or.equipe.bll.ReservationBLL;
 import pate_d_or.equipe.bll.RestaurantOrderBLL;
 import pate_d_or.equipe.bll.RestaurantTableBLL;
-import pate_d_or.equipe.entities.Dish;
 import pate_d_or.equipe.entities.Reservation;
 import pate_d_or.equipe.entities.RestaurantOrder;
 import pate_d_or.equipe.entities.RestaurantTable;
@@ -149,13 +147,8 @@ public class EquipeRest
 	
 	@PutMapping("/commandes/{id}/ajouter-plats")
 	public ResponseEntity<Void> updateDishes(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) {
-		RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
-		List<Dish> dishesToAdd = new ArrayList<>();
-		for (Dish current : restaurantOrder.getDishes()) {
-			dishesToAdd.add(current);
-		}
-		restaurantOrderToUpdate.setDishes(dishesToAdd);
-		restaurantOrderBll.save(restaurantOrderToUpdate);
+		//RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
+		restaurantOrderBll.updateDishes(id, restaurantOrder);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
