@@ -1,20 +1,18 @@
-package pate_d_or.equipe.entities;
+package pate_d_or.equipe.entities.admin;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name= "Tables")
+@Table(name="Tables")
 @Data
-public class RestaurantTable {
+public class AdminTable 
+{
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -24,9 +22,5 @@ public class RestaurantTable {
 	
 	@Column(length = 4)
 	private String state;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_restaurant")
-	private Restaurant restaurant;
 
 }

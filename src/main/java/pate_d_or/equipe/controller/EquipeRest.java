@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pate_d_or.equipe.bll.BLLException;
 import pate_d_or.equipe.bll.ReservationBLL;
+import pate_d_or.equipe.bll.RestaurantOrderBLL;
 import pate_d_or.equipe.bll.RestaurantTableBLL;
 import pate_d_or.equipe.bll.UserBLL;
 import pate_d_or.equipe.entities.Reservation;
+import pate_d_or.equipe.entities.RestaurantOrder;
 import pate_d_or.equipe.entities.RestaurantTable;
 import pate_d_or.equipe.entities.User;
+
 
 @RestController
 @CrossOrigin
@@ -37,20 +40,21 @@ public class EquipeRest
 	@Autowired
 	private UserBLL userBLL;
 	
+	@Autowired 
+	private RestaurantOrderBLL restaurantOrderBll;
+	
 	//=====================================================
 	//reservation
 	
 	@GetMapping("/resa")
-	public ResponseEntity<List<Reservation>> finAll()
-	{
+	public ResponseEntity<List<Reservation>> findAll() {
 		return new ResponseEntity<>(this.reservationBLL.findAll(), HttpStatus.OK);
 	}
 	
 	//-----------------------------------------
 	
 	@GetMapping("/resa/{id}")
-	public ResponseEntity<Reservation> finAll(@PathVariable("id") int id)
-	{
+	public ResponseEntity<Reservation> findResaById(@PathVariable("id") int id) {
 		return new ResponseEntity<>(this.reservationBLL.findById(id), HttpStatus.OK);
 	}
 	
@@ -76,13 +80,11 @@ public class EquipeRest
 		
 	}
 	
-	
-	
 	//=====================================================
 	//restaurantTable
 	
 	@GetMapping("/table")
-	public ResponseEntity<List<RestaurantTable>> findAll()
+	public ResponseEntity<List<RestaurantTable>> findAllTables()
 	{
 		return new ResponseEntity<>(this.retaurantTableBLL.findAll(), HttpStatus.OK);
 	}
@@ -148,12 +150,60 @@ public class EquipeRest
 	}
 	
 	@DeleteMapping("/users/{id}")
-	public ResponseEntity<Void> delete(int id) {
+	public ResponseEntity<Void> deleteUser(int id) {
 		userBLL.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-
+	
+	//=====================================================
+	//restaurantOrder
+	
+	@GetMapping("/commandes")
+	public List<RestaurantOrder> getAll() {
+		return restaurantOrderBll.getAll();
+	}
+	
+		
+	@GetMapping("/commandes/{id}")
+	public ResponseEntity<RestaurantOrder> getById(@PathVariable("id") int id) {
+		return new ResponseEntity<>(restaurantOrderBll.getById(id), HttpStatus.OK);
+	}
 	
 	
-
+	@GetMapping("/commandes/bill/{id}")
+	public ResponseEntity<Float> getOrderBillById(@PathVariable("id") int id)
+	{
+		return new ResponseEntity<>(this.restaurantOrderBll.getOrderBillById(id), HttpStatus.OK);
+	}
+	
+	@PostMapping("/commandes")
+	public ResponseEntity<RestaurantOrder> insert(@RequestBody RestaurantOrder restaurantOrder) {
+		restaurantOrderBll.save(restaurantOrder);
+		return new ResponseEntity<>(restaurantOrder, HttpStatus.CREATED);
+	}
+	
+	@PutMapping("/commandes/{id}/modifier-etat")
+	public ResponseEntity<Void> updateState(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) {
+		RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
+		restaurantOrderToUpdate.setState(restaurantOrder.getState());
+		restaurantOrderBll.save(restaurantOrderToUpdate);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@PutMapping("/commandes/{id}/ajouter-plats")
+	public ResponseEntity<Void> updateDishes(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) {
+		//RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
+		restaurantOrderBll.updateDishes(id, restaurantOrder);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/commandes/{id}")
+	public ResponseEntity<RestaurantOrder> deleteOrder(@PathVariable("id") int id) {
+		RestaurantOrder restaurantOrder = restaurantOrderBll.getById(id);
+		restaurantOrderBll.delete(id);
+		return new ResponseEntity<>(restaurantOrder, HttpStatus.OK);
+	}
+	
 }
+	
+
