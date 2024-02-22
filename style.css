@@ -1,0 +1,8 @@
+.error {
+  background-color: rgb(255, 128, 128);
+  border: solid 1px rgb(255, 75, 75);
+}
+
+.hidden {
+  visibility: hidden;
+}

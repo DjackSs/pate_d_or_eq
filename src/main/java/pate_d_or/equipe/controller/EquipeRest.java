@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pate_d_or.equipe.bll.BLLException;
 import pate_d_or.equipe.bll.ReservationBLL;
 import pate_d_or.equipe.bll.RestaurantOrderBLL;
 import pate_d_or.equipe.bll.RestaurantTableBLL;
+import pate_d_or.equipe.bll.UserBLL;
 import pate_d_or.equipe.entities.Reservation;
 import pate_d_or.equipe.entities.RestaurantOrder;
 import pate_d_or.equipe.entities.RestaurantTable;
+import pate_d_or.equipe.entities.User;
 
 
 @RestController
@@ -34,6 +37,9 @@ public class EquipeRest
 	@Autowired
 	private RestaurantTableBLL retaurantTableBLL;
 	
+	@Autowired
+	private UserBLL userBLL;
+	
 	@Autowired 
 	private RestaurantOrderBLL restaurantOrderBll;
 	
@@ -41,16 +47,14 @@ public class EquipeRest
 	//reservation
 	
 	@GetMapping("/resa")
-	public ResponseEntity<List<Reservation>> finAll()
-	{
+	public ResponseEntity<List<Reservation>> findAll() {
 		return new ResponseEntity<>(this.reservationBLL.findAll(), HttpStatus.OK);
 	}
 	
 	//-----------------------------------------
 	
 	@GetMapping("/resa/{id}")
-	public ResponseEntity<Reservation> finAll(@PathVariable("id") int id)
-	{
+	public ResponseEntity<Reservation> findResaById(@PathVariable("id") int id) {
 		return new ResponseEntity<>(this.reservationBLL.findById(id), HttpStatus.OK);
 	}
 	
@@ -76,13 +80,11 @@ public class EquipeRest
 		
 	}
 	
-	
-	
 	//=====================================================
 	//restaurantTable
 	
 	@GetMapping("/table")
-	public ResponseEntity<List<RestaurantTable>> findAll()
+	public ResponseEntity<List<RestaurantTable>> findAllTables()
 	{
 		return new ResponseEntity<>(this.retaurantTableBLL.findAll(), HttpStatus.OK);
 	}
@@ -110,6 +112,50 @@ public class EquipeRest
 	}
 	
 	//=====================================================
+	//User
+	
+	@GetMapping("/users")
+	public Iterable<User> getAllUsers() throws BLLException {
+		return userBLL.getAllUsers();
+	}
+
+	@GetMapping("/users/{id}")
+	public User getUserById(@PathVariable("id") int id) {
+		return userBLL.getUserById(id);
+	}
+
+	@PostMapping("/users/{id}")
+	public ResponseEntity<User> insertUser(@PathVariable("id") int id, @RequestBody User user) throws BLLException {
+		User operator = userBLL.getUserById(id);
+		if ("admi".equals(operator.getRole())) {
+			try {
+				userBLL.saveOrUpdate(user);
+			} catch (BLLException e) {
+				throw new BLLException("Impossible de créer un nouvel utilisateur", e);
+			}
+			return new ResponseEntity<>(user, HttpStatus.CREATED);
+		}
+		return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
+	}
+
+	@PutMapping("/users/{id}")
+	public ResponseEntity<Void> updateUser(@PathVariable("id") int id, @RequestBody User user) throws BLLException {
+		user.setId(id);
+		try {
+			userBLL.saveOrUpdate(user);
+		} catch (BLLException e) {
+			throw new BLLException("Impossible de mettre à jour l'utilisateur", e);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/users/{id}")
+	public ResponseEntity<Void> deleteUser(int id) {
+		userBLL.deleteById(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	//=====================================================
 	//restaurantOrder
 	
 	@GetMapping("/commandes")
@@ -123,7 +169,6 @@ public class EquipeRest
 		return new ResponseEntity<>(restaurantOrderBll.getById(id), HttpStatus.OK);
 	}
 	
-	//-----------------------------------------
 	
 	@GetMapping("/commandes/bill/{id}")
 	public ResponseEntity<Float> getOrderBillById(@PathVariable("id") int id)
@@ -153,12 +198,11 @@ public class EquipeRest
 	}
 	
 	@DeleteMapping("/commandes/{id}")
-	public ResponseEntity<RestaurantOrder> delete(@PathVariable("id") int id) {
+	public ResponseEntity<RestaurantOrder> deleteOrder(@PathVariable("id") int id) {
 		RestaurantOrder restaurantOrder = restaurantOrderBll.getById(id);
 		restaurantOrderBll.delete(id);
 		return new ResponseEntity<>(restaurantOrder, HttpStatus.OK);
 	}
-	
 	
 }
 	
