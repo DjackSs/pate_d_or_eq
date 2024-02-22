@@ -14,16 +14,37 @@ public class AdminRestaurantBLL
 	@Autowired
 	private AdminRestaurantDAO adminRestaurantDAO;
 	
+	//====================================================
+	
 	public List<AdminRestaurant> findAll()
 	{
 		return (List<AdminRestaurant>) this.adminRestaurantDAO.findAll();
 	}
 	
-	public void save(AdminRestaurant newRestaurant)
+	//----------------------------------------------------
+	
+	public AdminRestaurant findById(int id)
 	{
-		this.adminRestaurantDAO.save(newRestaurant);
+		return this.adminRestaurantDAO.findById(id).get();
 	}
 	
+	//----------------------------------------------------
+	
+	public void save(AdminRestaurant newRestaurant)
+	{
+		if(newRestaurant.getSchedules().size() != 0 && newRestaurant.getTables().size() != 0)
+		{
+			this.adminRestaurantDAO.save(newRestaurant);
+		}
+		
+	}
+	
+	//----------------------------------------------------
+	
+	public void delete(int id)
+	{
+		this.adminRestaurantDAO.deleteById(id);
+	}
 	
 
 }
