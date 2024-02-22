@@ -18,8 +18,8 @@ function loadPage() {
       "token": sessionStorage.getItem("token")
     }
   })
-  .then(response => response.json())
-  .then(content => {console.log(content), displayContent(content)});
+  .then(response => response.text())
+  .then(content => displayContent(content));
 }
 
 function displayContent(content) {
