@@ -36,7 +36,7 @@ CREATE TABLE Tables (
 	id				INT				PRIMARY KEY identity,
 	number_place	int		        NOT NULL,
     state           char(4)         null,
-	id_restaurant	INT				NOT NULL,
+	id_restaurant	INT				null,
 
     FOREIGN KEY (id_restaurant) REFERENCES Restaurants(id) on delete cascade,
     check(state in(null,'pres'))
