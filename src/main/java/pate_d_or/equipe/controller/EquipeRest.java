@@ -137,11 +137,18 @@ public class EquipeRest
 		return new ResponseEntity<>(restaurantOrder, HttpStatus.CREATED);
 	}
 	
-	@PutMapping("/commandes/{id}")
+	@PutMapping("/commandes/{id}/modifier-etat")
 	public ResponseEntity<Void> updateState(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) {
 		RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
 		restaurantOrderToUpdate.setState(restaurantOrder.getState());
 		restaurantOrderBll.save(restaurantOrderToUpdate);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@PutMapping("/commandes/{id}/ajouter-plats")
+	public ResponseEntity<Void> updateDishes(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) {
+		//RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
+		restaurantOrderBll.updateDishes(id, restaurantOrder);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
