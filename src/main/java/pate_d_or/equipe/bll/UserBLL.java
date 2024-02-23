@@ -4,10 +4,12 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import pate_d_or.equipe.dal.UserDAO;
@@ -80,14 +82,24 @@ public class UserBLL {
 			throw bll;
 		}
 			
-		User user = userDAO.findByEmailAndPasswordIs(email, password);
+		List<User> users = userDAO.findByEmail(email);
+		User trueUser = null;
 		
-		if (user != null) {
-			user.setToken(generateToken());
-			user.setExpirationTime(LocalDateTime.now().plusMinutes(30));
-			userDAO.save(user);
+		for(User user : users)
+		{
+			if(BCrypt.checkpw(password, user.getPassword()))
+			{
+				trueUser = user;
+			}
 		}
-		return user;
+		
+		if (trueUser != null) {
+			trueUser.setToken(generateToken());
+			trueUser.setExpirationTime(LocalDateTime.now().plusMinutes(30));
+			userDAO.save(trueUser);
+		}
+		
+		return trueUser;
 	
 	}
 	
@@ -199,6 +211,10 @@ public class UserBLL {
 			throw bll;
 		}
 		
+		//hashing the password
+		user.setPassword(this.toHash(user.getPassword()));
+		
+	
 		userDAO.save(user);
 		
 	}
@@ -213,6 +229,14 @@ public class UserBLL {
 	private boolean regexMatche(String test, String regexPattern)
 	{
 		return Pattern.compile(regexPattern).matcher(test).matches();
+	}
+	
+	//----------------------------------------
+	
+	private String toHash(String password)
+	{
+		//gensalt() augmente la complexité du cryptage, gensalt(10) par défaut, varie de 4 à 31
+		return BCrypt.hashpw(password, BCrypt.gensalt());
 	}
 	
 }
