@@ -55,8 +55,8 @@ VALUES
 -- Messages
 INSERT INTO Messages (object, content, id_user)
 VALUES
-    ('Feedback Qualité', 'Merci pour l''expérience culinaire exceptionnelle! La nourriture était exceptionnelle.', 10),
-    ('Demande de Menu', 'Pourriez-vous fournir des informations sur les options végétariennes dans le menu?', 10);
+    ('Feedback Qualité', 'Merci pour l''expérience culinaire exceptionnelle! La nourriture était exceptionnelle.', 1),
+    ('Demande de Menu', 'Pourriez-vous fournir des informations sur les options végétariennes dans le menu?', 1);
 
 
 -- Tables
@@ -81,9 +81,9 @@ VALUES
 -- Reservations
 INSERT INTO Reservations (reservation_time, state, id_table, id_user)
 VALUES
-    (CAST('2024-01-05 18:30:00' AS DATETIME), 'hold', 1, 10),
-    (CAST('2024-01-07 19:00:00' AS DATETIME), 'gran', 2, 10),
-    (CAST('2024-01-10 20:00:00' AS DATETIME), 'deni', 3, 10)
+    (CAST('2024-01-05 18:30:00' AS DATETIME), 'hold', 1, 1),
+    (CAST('2024-01-07 19:00:00' AS DATETIME), 'gran', 2, 1),
+    (CAST('2024-01-10 20:00:00' AS DATETIME), 'deni', 3, 1)
 
 
 -- Orders_dishes
