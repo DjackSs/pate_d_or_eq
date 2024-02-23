@@ -52,7 +52,7 @@ CREATE TABLE Users (
     password        varchar(150)    not null,
     token			varchar(255)	null,
     expirationTime	datetime		null,
-    role            char(4)         not null default 'cus',
+    role            char(4)         not null default 'cust',
 
     check( role in('cust', 'admi', 'staf'))
 );
