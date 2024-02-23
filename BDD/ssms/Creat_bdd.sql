@@ -51,7 +51,7 @@ CREATE TABLE Users (
     email           varchar(50)     not null,
     password        varchar(150)    not null,
     token			varchar(255)	null,
-    expirationTime	datetime		null,
+    expiration_time	datetime		null,
     role            char(4)         not null default 'cust',
 
     check( role in('cust', 'admi', 'staf'))

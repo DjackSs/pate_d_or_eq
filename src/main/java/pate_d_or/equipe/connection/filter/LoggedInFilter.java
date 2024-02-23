@@ -24,7 +24,8 @@ public class LoggedInFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest httpReq = (HttpServletRequest) request;
 		HttpServletResponse httpResp = (HttpServletResponse) response;
-
+		
+		
 		/*
 		 * Si on essaie d'accéder au endpoint de login, on autorise l'accès
 		 * sans vérifier d'autre condition
@@ -39,6 +40,7 @@ public class LoggedInFilter implements Filter {
 		/*
 		 * Si le token n'est pas renseigné, on interdit l'accès
 		 */
+
 		String auth = httpReq.getHeader("token");
 		if (auth == null || auth.isBlank()) {
 			httpResp.sendError(HttpStatus.UNAUTHORIZED.value());
@@ -50,11 +52,15 @@ public class LoggedInFilter implements Filter {
 		 * on interdit l'accès
 		 * Sinon, on autorise l'accès
 		 */
+		
+
 		User user = service.getByToken(auth);
 		if (user == null) {
 			httpResp.sendError(HttpStatus.UNAUTHORIZED.value());
 		} else {
 			chain.doFilter(request, response);
 		}
+		
+
 	}
 }

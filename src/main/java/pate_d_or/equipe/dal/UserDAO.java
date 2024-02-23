@@ -1,6 +1,7 @@
 package pate_d_or.equipe.dal;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
@@ -17,9 +18,9 @@ public interface UserDAO extends CrudRepository<User, Integer> {
 	
 	
 	/*
-	 * Nous permettra de retrouver un utilisateur d'après son identifiant / mdp
+	 * Nous permettra de retrouver un utilisateur d'après son identifiant
 	 * Cette méthode est utilisée pour trouver un utilisateur au moment de la connexion.
 	 */
-	public User findByEmailAndPasswordIs(String email, String password);
+	public List<User> findByEmail(String email);
 	
 }

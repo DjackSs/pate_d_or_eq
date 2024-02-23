@@ -1,6 +1,7 @@
 package pate_d_or.equipe.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -124,17 +125,24 @@ public class EquipeRest
 		return userBLL.getUserById(id);
 	}
 
-	@PostMapping("/users/{id}")
-	public ResponseEntity<User> insertUser(@PathVariable("id") int id, @RequestBody User user) throws BLLException {
-		User operator = userBLL.getUserById(id);
-		if ("admi".equals(operator.getRole())) {
-			try {
+	@PostMapping("/users")
+	public ResponseEntity<User> insertUser(@RequestBody User user) throws BLLException {
+		
+		if ("staf".equals(user.getRole())) 
+		{
+			try 
+			{
 				userBLL.saveOrUpdate(user);
-			} catch (BLLException e) {
+			} 
+			catch (BLLException e) 
+			{
+				
 				throw new BLLException("Impossible de créer un nouvel utilisateur", e);
 			}
+			
 			return new ResponseEntity<>(user, HttpStatus.CREATED);
 		}
+		
 		return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
 	}
 
