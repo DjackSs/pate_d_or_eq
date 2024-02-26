@@ -31,22 +31,13 @@ public class UserBLL {
 	//https://mkyong.com/regular-expressions/how-to-validate-password-with-regular-expression/
 	private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{4,20}$";
 	
-	//------------------message constants
-	private static final int MESSAGE_OBJECT_MAX_LENGTH = 100;
-	private static final int MESSAGE_CONTENT_MAX_LENGTH = 250;
-	/*
-	 * Les attributs static suivants et la méthode generateToken
-	 * sont des outils nous permettant de générer un token aléatoire
-	 * de 64 caractères de long.
-	 */
-	private static final SecureRandom secureRandom = new SecureRandom();
-	private static final Encoder base64encoder = Base64.getUrlEncoder();
+	//token
+	private  final SecureRandom secureRandom = new SecureRandom();
+	private  final Encoder base64encoder = Base64.getUrlEncoder();
+	private static final int USER_TOKEN_LIFETIME = 30;
 	
-	private String generateToken() {
-		byte[] randomBytes = new byte[48];
-		secureRandom.nextBytes(randomBytes);
-		return base64encoder.encodeToString(randomBytes);
-	}
+	
+	//====================================================================
 	
 	public Iterable<User> getAllUsers() {
 	
@@ -54,15 +45,14 @@ public class UserBLL {
 	
 	}
 	
+	//--------------------------------------------------------------------
+	
 	public User getUserById(int id) {
 		return userDAO.findById(id).get();
 	}
 	
-	/*
-	 * Quand on se connecte avec login et mdp, on crée un token aléatoire
-	 * qu'on renverra à l'utilisateur pour ses accès futurs.
-	 * Ici, le token est configuré pour expirer après 30 minutes d'inactivité
-	 */
+	//--------------------------------------------------------------------
+	
 	public User getByLoginAndPassword(String email, String password) throws BLLException {
 		
 		BLLException bll = new BLLException();
@@ -95,13 +85,15 @@ public class UserBLL {
 		
 		if (trueUser != null) {
 			trueUser.setToken(generateToken());
-			trueUser.setExpirationTime(LocalDateTime.now().plusMinutes(30));
+			trueUser.setExpirationTime(LocalDateTime.now().plusMinutes(USER_TOKEN_LIFETIME));
 			userDAO.save(trueUser);
 		}
 		
 		return trueUser;
 	
 	}
+	
+	//--------------------------------------------------------------------
 	
 	/*
 	 * Quand on s'identifie avec le token, on en profite pour mettre à jour
@@ -112,11 +104,13 @@ public class UserBLL {
 	public User getByToken(String token) {
 		User user = userDAO.findByTokenAndExpirationTimeAfter(token, LocalDateTime.now());
 		if (user != null) {
-			user.setExpirationTime(LocalDateTime.now().plusMinutes(30));
+			user.setExpirationTime(LocalDateTime.now().plusMinutes(USER_TOKEN_LIFETIME));
 			userDAO.save(user);
 		}
 		return user;
 	}
+	
+	//--------------------------------------------------------------------
 	
 	public void logout(String token) {
 		User user = userDAO.findByTokenAndExpirationTimeAfter(token, LocalDateTime.now());
@@ -126,6 +120,8 @@ public class UserBLL {
 			userDAO.save(user);
 		}
 	}
+	
+	//--------------------------------------------------------------------
 	
 	public void saveOrUpdate(User user) throws BLLException {
 		BLLException bll = new BLLException ();
@@ -219,11 +215,13 @@ public class UserBLL {
 		
 	}
 	
+	//--------------------------------------------------------------------
+	
 	public void deleteById(int id) {
 		userDAO.deleteById(id);
 	}
 	
-	//----------------------------------------
+	//--------------------------------------------------------------------
 	
 	//regex test method
 	private boolean regexMatche(String test, String regexPattern)
@@ -231,12 +229,20 @@ public class UserBLL {
 		return Pattern.compile(regexPattern).matcher(test).matches();
 	}
 	
-	//----------------------------------------
+	//--------------------------------------------------------------------
 	
 	private String toHash(String password)
 	{
 		//gensalt() augmente la complexité du cryptage, gensalt(10) par défaut, varie de 4 à 31
 		return BCrypt.hashpw(password, BCrypt.gensalt());
+	}
+	
+	//--------------------------------------------------------------------
+	
+	private String generateToken() {
+		byte[] randomBytes = new byte[48];
+		secureRandom.nextBytes(randomBytes);
+		return base64encoder.encodeToString(randomBytes);
 	}
 	
 }
