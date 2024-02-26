@@ -16,11 +16,6 @@ public interface UserDAO extends CrudRepository<User, Integer> {
 	 */
 	public User findByTokenAndExpirationTimeAfter(String token, LocalDateTime expirationTime);
 	
-	
-	/*
-	 * Nous permettra de retrouver un utilisateur d'après son identifiant
-	 * Cette méthode est utilisée pour trouver un utilisateur au moment de la connexion.
-	 */
 	public List<User> findByEmail(String email);
 	
 }

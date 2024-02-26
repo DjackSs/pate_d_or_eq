@@ -113,5 +113,3 @@ CREATE TABLE Orders_Dishes (
     FOREIGN KEY (id_order) REFERENCES Orders(id) on delete cascade,
     FOREIGN KEY (id_dish) REFERENCES Dishes(id)
 );
-
-

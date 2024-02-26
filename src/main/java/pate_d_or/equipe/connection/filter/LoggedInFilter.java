@@ -2,6 +2,7 @@ package pate_d_or.equipe.connection.filter;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -21,44 +22,63 @@ public class LoggedInFilter implements Filter {
 
 	@Autowired private UserBLL service;
 	
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException 
+	{
 		HttpServletRequest httpReq = (HttpServletRequest) request;
 		HttpServletResponse httpResp = (HttpServletResponse) response;
 		
+		
+		//=========================================================================
+		//routes non filtrée
 		
 		/*
 		 * Si on essaie d'accéder au endpoint de login, on autorise l'accès
 		 * sans vérifier d'autre condition
 		 */
-
-		if ("/login".equals(httpReq.getServletPath())
-			|| "OPTIONS".equals(httpReq.getMethod())) {
+		
+		if ("/login".equals(httpReq.getServletPath()) || "/pate_d_or/users".equals(httpReq.getServletPath())  || "OPTIONS".equals(httpReq.getMethod())) {
 				chain.doFilter(request, response);
 				return;
 			}
+		
+	
+		
+		//=========================================================================
+		//
 		
 		/*
 		 * Si le token n'est pas renseigné, on interdit l'accès
 		 */
 
-		String auth = httpReq.getHeader("token");
-		if (auth == null || auth.isBlank()) {
+		String token = httpReq.getHeader("token");
+		
+		if (StringUtils.isBlank(token)) 
+		{
 			httpResp.sendError(HttpStatus.UNAUTHORIZED.value());
 			return;
 		}
+		
 		
 		/*
 		 * Si le token est renseigné mais ne correspond à aucun user
 		 * on interdit l'accès
 		 * Sinon, on autorise l'accès
 		 */
-		
 
-		User user = service.getByToken(auth);
-		if (user == null) {
+		User user = service.getByToken(token);
+		
+		if (user == null) 
+		{
 			httpResp.sendError(HttpStatus.UNAUTHORIZED.value());
-		} else {
+		} 
+		else 
+		{
+			
+			
+		
 			chain.doFilter(request, response);
+		
+			
 		}
 		
 

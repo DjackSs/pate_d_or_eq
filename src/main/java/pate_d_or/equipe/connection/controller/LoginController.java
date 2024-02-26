@@ -7,12 +7,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import pate_d_or.equipe.bll.BLLException;
 import pate_d_or.equipe.bll.UserBLL;
-import pate_d_or.equipe.dal.DALException;
 import pate_d_or.equipe.entities.User;
 
 @RestController
