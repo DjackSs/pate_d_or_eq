@@ -23,8 +23,16 @@ public class ReservationBLL
 	
 	//-----------------------------------------
 	
-	public Reservation findById(int id)
+	public Reservation findById(int id) throws BLLException
 	{
+		BLLException bll = new BLLException();
+		
+		if(this.reservationDAO.findById(id).isEmpty())
+		{
+			bll.addError("reservation", "Resservation inconue");
+			throw bll;
+		}
+		
 		return this.reservationDAO.findById(id).get();
 	}
 	
