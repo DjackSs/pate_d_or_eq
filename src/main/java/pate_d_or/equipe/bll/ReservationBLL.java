@@ -19,6 +19,13 @@ public class ReservationBLL
 	public List<Reservation> findAll()
 	{
 		return (List<Reservation>) this.reservationDAO.findAll();
+	}	
+	
+	//-----------------------------------------
+	
+	public List<Reservation> findAllByIdTable(int id)
+	{
+		return (List<Reservation>) this.reservationDAO.findByTableId(id);
 	}
 	
 	//-----------------------------------------

@@ -60,6 +60,13 @@ public class EquipeRest
 	
 	//-----------------------------------------
 	
+	@GetMapping("/resa/table/{id}")
+	public ResponseEntity<List<Reservation>> findResaByIdTable(@PathVariable("id") int id) {
+		return new ResponseEntity<>(this.reservationBLL.findAllByIdTable(id), HttpStatus.OK);
+	}
+	
+	//-----------------------------------------
+	
 	@PutMapping("/resa/{id}")
 	public ResponseEntity<Void> updateReservation(@PathVariable("id") int id, @RequestBody Reservation reservation)
 	{
