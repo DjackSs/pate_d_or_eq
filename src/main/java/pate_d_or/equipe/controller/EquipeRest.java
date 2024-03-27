@@ -60,9 +60,9 @@ public class EquipeRest
 	
 	//-----------------------------------------
 	
-	@GetMapping("/resa/table/{id}")
+	@GetMapping("/resa/restaurant/{id}")
 	public ResponseEntity<List<Reservation>> findResaByIdTable(@PathVariable("id") int id) {
-		return new ResponseEntity<>(this.reservationBLL.findAllByIdTable(id), HttpStatus.OK);
+		return new ResponseEntity<>(this.reservationBLL.findAllByRestaurantId(id), HttpStatus.OK);
 	}
 	
 	//-----------------------------------------

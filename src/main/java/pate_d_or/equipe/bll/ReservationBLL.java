@@ -23,9 +23,9 @@ public class ReservationBLL
 	
 	//-----------------------------------------
 	
-	public List<Reservation> findAllByIdTable(int id)
+	public List<Reservation> findAllByRestaurantId(int id)
 	{
-		return (List<Reservation>) this.reservationDAO.findByTableId(id);
+		return (List<Reservation>) this.reservationDAO.findAllByRestaurantId(id);
 	}
 	
 	//-----------------------------------------
