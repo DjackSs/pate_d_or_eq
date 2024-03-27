@@ -30,6 +30,13 @@ public class RestaurantTableBLL
 	
 	//-----------------------------------------
 	
+	public List<RestaurantTable> findByRestaurantId(int restaurantId)
+	{
+		return (List<RestaurantTable>) this.restaurantTableDAO.findByRestaurantId(restaurantId);
+	}
+	
+	//-----------------------------------------
+	
 	public void save(RestaurantTable restaurantTable)
 	{
 		this.restaurantTableDAO.save(restaurantTable);

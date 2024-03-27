@@ -36,7 +36,7 @@ CREATE TABLE Tables (
 	id				INT				PRIMARY KEY auto_increment,
 	number_place	int		        NOT NULL,
     state           char(4)         null,
-	id_restaurant	INT				NOT NULL,
+	id_restaurant	INT				null,
 
     FOREIGN KEY (id_restaurant) REFERENCES Restaurants(id) on delete cascade,
     check(state in(null,'pres'))
@@ -50,7 +50,9 @@ CREATE TABLE Users (
     lastname        varchar(40)     not null,
     email           varchar(50)     not null,
     password        varchar(150)    not null,
-    role            char(4)         not null default 'cus',
+    token			varchar(255)	null,
+    expiration_time	datetime		null,
+    role            char(4)         not null default 'cust',
 
     check( role in('cust', 'admi', 'staf'))
 );
@@ -111,5 +113,3 @@ CREATE TABLE Orders_Dishes (
     FOREIGN KEY (id_order) REFERENCES Orders(id) on delete cascade,
     FOREIGN KEY (id_dish) REFERENCES Dishes(id)
 );
-
-
