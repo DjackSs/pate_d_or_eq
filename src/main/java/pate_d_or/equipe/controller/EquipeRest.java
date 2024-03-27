@@ -210,8 +210,9 @@ public class EquipeRest
 	//restaurantOrder
 	
 	@GetMapping("/commandes")
-	public List<RestaurantOrder> getAll() {
-		return restaurantOrderBll.getAll();
+	public ResponseEntity<List<RestaurantOrder>> getAll() 
+	{
+		return new ResponseEntity<>(restaurantOrderBll.getAll(), HttpStatus.OK);
 	}
 	
 		
@@ -233,6 +234,17 @@ public class EquipeRest
 	public ResponseEntity<List<BillDTO>> getDetailBillWhereStateSoldAndOrderByIdTable() {
 		return new ResponseEntity<>(this.restaurantOrderBll.getDetailBillWhereStateSoldAndOrderByIdTable(), HttpStatus.OK);
 	}
+	
+	@GetMapping("/commandes/table/{id}")
+	public ResponseEntity<List<RestaurantOrder>> getByTableId(@PathVariable("id") int tableId) 
+	{
+		
+		return new ResponseEntity<>(restaurantOrderBll.getByTableId(tableId), HttpStatus.OK);
+		
+		
+	}
+	
+	
 	
 	@GetMapping("/commandes/bill/{id}")
 	public ResponseEntity<Float> getTotalAmountOrderBillById(@PathVariable("id") int id)

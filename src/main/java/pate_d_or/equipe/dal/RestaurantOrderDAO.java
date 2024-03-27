@@ -1,5 +1,7 @@
 package pate_d_or.equipe.dal;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import java.util.List;
@@ -8,6 +10,8 @@ import pate_d_or.equipe.entities.RestaurantOrder;
 
 public interface RestaurantOrderDAO extends CrudRepository<RestaurantOrder, Integer> 
 {
+	List<RestaurantOrder> findByTableId(int tableId);
+	
 	@Query( value = "SELECT o.id_table AS table_number, d.name AS dish_name, d.price AS dish_price\r\n"
 			+ "FROM Orders o\r\n"
 			+ "JOIN Orders_Dishes od ON o.id = od.id_order\r\n"
