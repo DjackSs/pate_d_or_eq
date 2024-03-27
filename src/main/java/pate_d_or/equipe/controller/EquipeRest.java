@@ -228,11 +228,10 @@ public class EquipeRest
 		
 	}
 	
-	
 	@GetMapping("/commandes/bill/{id}")
-	public ResponseEntity<Float> getOrderBillById(@PathVariable("id") int id)
+	public ResponseEntity<Float> getTotalAmountOrderBillById(@PathVariable("id") int id)
 	{
-		return new ResponseEntity<>(this.restaurantOrderBll.getOrderBillById(id), HttpStatus.OK);
+		return new ResponseEntity<>(this.restaurantOrderBll.getTotalAmountOrderBillById(id), HttpStatus.OK);
 	}
 	
 	@PostMapping("/commandes")

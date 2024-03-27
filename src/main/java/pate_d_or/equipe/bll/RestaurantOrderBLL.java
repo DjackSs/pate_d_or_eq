@@ -31,9 +31,9 @@ public class RestaurantOrderBLL {
 		return restaurantOrderDao.findById(id).get();
 	}
 
-	public Float getOrderBillById(int id)
+	public Float getTotalAmountOrderBillById(int id)
 	{
-		return this.restaurantOrderDao.getOrderBillById(id);
+		return this.restaurantOrderDao.getTotalAmountOrderBillById(id);
 	}
 	
 	public void save(RestaurantOrder restaurantOrder) {
