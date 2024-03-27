@@ -43,6 +43,7 @@ public class EquipeRest
 	@Autowired 
 	private RestaurantOrderBLL restaurantOrderBll;
 	
+	
 	//=====================================================
 	//reservation
 	
@@ -54,15 +55,24 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@GetMapping("/resa/{id}")
-	public ResponseEntity<Reservation> findResaById(@PathVariable("id") int id) {
-		return new ResponseEntity<>(this.reservationBLL.findById(id), HttpStatus.OK);
+	public ResponseEntity<Reservation> findResaById(@PathVariable("id") int id) 
+	{
+		try
+		{
+			return new ResponseEntity<>(this.reservationBLL.findById(id), HttpStatus.OK);
+		}
+		catch (BLLException error)
+		{
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
 	}
 	
 	//-----------------------------------------
 	
-	@GetMapping("/resa/table/{id}")
-	public ResponseEntity<List<Reservation>> findResaByIdTable(@PathVariable("id") int id) {
-		return new ResponseEntity<>(this.reservationBLL.findAllByIdTable(id), HttpStatus.OK);
+	@GetMapping("/resa/restaurant/{id}")
+	public ResponseEntity<List<Reservation>> findAllByRestaurantId(@PathVariable("id") int id) {
+		return new ResponseEntity<>(this.reservationBLL.findAllByRestaurantId(id), HttpStatus.OK);
 	}
 	
 	//-----------------------------------------
@@ -70,20 +80,29 @@ public class EquipeRest
 	@PutMapping("/resa/{id}")
 	public ResponseEntity<Void> updateReservation(@PathVariable("id") int id, @RequestBody Reservation reservation)
 	{
-		Reservation updateReservation = this.reservationBLL.findById(id);
-		
-		//Change uniquement le status de la réservation
-		updateReservation.setState(reservation.getState());
-		
-		//si le client est arrivé alors on changge aussi le status de sa table
-		if("here".equalsIgnoreCase(reservation.getState()))
+		try
 		{
-			reservation.getTable().setState("pres");
+			Reservation updateReservation = this.reservationBLL.findById(id);
+			
+			//Change uniquement le status de la réservation
+			updateReservation.setState(reservation.getState());
+			
+			//si le client est arrivé alors on changge aussi le status de sa table
+			if("here".equalsIgnoreCase(reservation.getState()))
+			{
+				reservation.getTable().setState("pres");
+			}
+			
+			this.reservationBLL.save(updateReservation);
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+			
+		}
+		catch (BLLException error)
+		{
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
-		this.reservationBLL.save(updateReservation);
-		
-		return new ResponseEntity<>(HttpStatus.OK);
 		
 	}
 	
@@ -106,6 +125,14 @@ public class EquipeRest
 	
 	//-----------------------------------------
 	
+	@GetMapping("/table/resto/{id}")
+	public ResponseEntity<List<RestaurantTable>> findByRestaurantId(@PathVariable("id") int restaurantId)
+	{
+		return new ResponseEntity<>(this.retaurantTableBLL.findByRestaurantId(restaurantId), HttpStatus.OK);
+	}
+	
+	//-----------------------------------------
+	
 	@PutMapping("/table/{id}")
 	public ResponseEntity<Void> updateRestaurantTable(@PathVariable("id") int id, @RequestBody RestaurantTable restaurantTable)
 	{
@@ -122,13 +149,22 @@ public class EquipeRest
 	//User
 	
 	@GetMapping("/users")
-	public Iterable<User> getAllUsers() throws BLLException {
-		return userBLL.getAllUsers();
+	public ResponseEntity<List<User>> getAllUsers() throws BLLException {
+		return new ResponseEntity<>(userBLL.getAllUsers(), HttpStatus.OK);
 	}
 
 	@GetMapping("/users/{id}")
-	public User getUserById(@PathVariable("id") int id) {
-		return userBLL.getUserById(id);
+	public ResponseEntity<User> getUserById(@PathVariable("id") int id) 
+	{
+		try
+		{
+			return new ResponseEntity<>( userBLL.getUserById(id), HttpStatus.OK);
+		}
+		catch (BLLException error)
+		{
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
 	}
 
 	@PostMapping("/users")
@@ -164,7 +200,7 @@ public class EquipeRest
 	}
 	
 	@DeleteMapping("/users/{id}")
-	public ResponseEntity<Void> deleteUser(int id) {
+	public ResponseEntity<Void> deleteUser(@PathVariable("id") int id) {
 		userBLL.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
@@ -179,9 +215,18 @@ public class EquipeRest
 	
 		
 	@GetMapping("/commandes/{id}")
-	public ResponseEntity<RestaurantOrder> getById(@PathVariable("id") int id) {
-		return new ResponseEntity<>(restaurantOrderBll.getById(id), HttpStatus.OK);
-	}	
+	public ResponseEntity<RestaurantOrder> getById(@PathVariable("id") int id) 
+	{
+		try
+		{
+			return new ResponseEntity<>(restaurantOrderBll.getById(id), HttpStatus.OK);
+		}
+		catch (BLLException error)
+		{
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+	}
 	
 	@GetMapping("/commandes/bill/{id}")
 	public ResponseEntity<Float> getTotalAmountOrderBillById(@PathVariable("id") int id)
@@ -196,11 +241,21 @@ public class EquipeRest
 	}
 	
 	@PutMapping("/commandes/{id}/modifier-etat")
-	public ResponseEntity<Void> updateState(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) {
-		RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
-		restaurantOrderToUpdate.setState(restaurantOrder.getState());
-		restaurantOrderBll.save(restaurantOrderToUpdate);
-		return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<Void> updateState(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) 
+	{
+		try
+		{
+			RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
+			restaurantOrderToUpdate.setState(restaurantOrder.getState());
+			restaurantOrderBll.save(restaurantOrderToUpdate);
+			return new ResponseEntity<>(HttpStatus.OK);
+			
+		}
+		catch(BLLException error)
+		{
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
 	}
 	
 	@PutMapping("/commandes/{id}/ajouter-plats")
@@ -211,10 +266,20 @@ public class EquipeRest
 	}
 	
 	@DeleteMapping("/commandes/{id}")
-	public ResponseEntity<RestaurantOrder> deleteOrder(@PathVariable("id") int id) {
-		RestaurantOrder restaurantOrder = restaurantOrderBll.getById(id);
-		restaurantOrderBll.delete(id);
-		return new ResponseEntity<>(restaurantOrder, HttpStatus.OK);
+	public ResponseEntity<RestaurantOrder> deleteOrder(@PathVariable("id") int id) 
+	{
+		try
+		{
+			RestaurantOrder restaurantOrder = restaurantOrderBll.getById(id);
+			restaurantOrderBll.delete(id);
+			return new ResponseEntity<>(restaurantOrder, HttpStatus.OK);
+			
+		}
+		catch(BLLException error)
+		{
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
 	}
 	
 }

@@ -27,7 +27,7 @@ public class Reservation {
 	
 	private String state;
 	
-	@OneToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_table")
 	private RestaurantTable table;
 	

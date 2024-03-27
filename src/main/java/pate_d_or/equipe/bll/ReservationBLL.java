@@ -23,15 +23,23 @@ public class ReservationBLL
 	
 	//-----------------------------------------
 	
-	public List<Reservation> findAllByIdTable(int id)
+	public List<Reservation> findAllByRestaurantId(int id)
 	{
-		return (List<Reservation>) this.reservationDAO.findByTableId(id);
+		return (List<Reservation>) this.reservationDAO.findAllByRestaurantId(id);
 	}
 	
 	//-----------------------------------------
 	
-	public Reservation findById(int id)
+	public Reservation findById(int id) throws BLLException
 	{
+		BLLException bll = new BLLException();
+		
+		if(this.reservationDAO.findById(id).isEmpty())
+		{
+			bll.addError("reservation", "Resservation inconue");
+			throw bll;
+		}
+		
 		return this.reservationDAO.findById(id).get();
 	}
 	

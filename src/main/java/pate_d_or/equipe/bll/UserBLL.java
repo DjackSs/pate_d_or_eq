@@ -39,15 +39,24 @@ public class UserBLL {
 	
 	//====================================================================
 	
-	public Iterable<User> getAllUsers() {
+	public List<User> getAllUsers() {
 	
-		return userDAO.findAll();
+		return (List<User>) userDAO.findAll();
 	
 	}
 	
 	//--------------------------------------------------------------------
 	
-	public User getUserById(int id) {
+	public User getUserById(int id) throws BLLException
+	{
+		BLLException bll = new BLLException();
+		
+		if(userDAO.findById(id).isEmpty())
+		{
+			bll.addError("user", "Utilisateur inconue");
+			throw bll;
+		}
+		
 		return userDAO.findById(id).get();
 	}
 	
@@ -83,7 +92,8 @@ public class UserBLL {
 			}
 		}
 		
-		if (trueUser != null) {
+		if (trueUser != null) 
+		{
 			trueUser.setToken(generateToken());
 			trueUser.setExpirationTime(LocalDateTime.now().plusMinutes(USER_TOKEN_LIFETIME));
 			userDAO.save(trueUser);
@@ -101,8 +111,10 @@ public class UserBLL {
 	 * sur l'application, le token n'expire pas.
 	 */
 	
-	public User getByToken(String token) {
+	public User getByToken(String token) 
+	{
 		User user = userDAO.findByTokenAndExpirationTimeAfter(token, LocalDateTime.now());
+		
 		if (user != null) {
 			user.setExpirationTime(LocalDateTime.now().plusMinutes(USER_TOKEN_LIFETIME));
 			userDAO.save(user);

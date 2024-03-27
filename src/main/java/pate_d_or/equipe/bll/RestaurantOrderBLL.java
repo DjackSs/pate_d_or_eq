@@ -1,6 +1,5 @@
 package pate_d_or.equipe.bll;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,17 @@ public class RestaurantOrderBLL {
 		return (List<RestaurantOrder>) restaurantOrderDao.findAll();
 	}
 	
-	public RestaurantOrder getById(int id) {
+	public RestaurantOrder getById(int id) throws BLLException 
+	{
+		BLLException bll = new BLLException();
+		
+		if(restaurantOrderDao.findById(id).isEmpty())
+		{
+			bll.addError("order", "Commande inconue");
+			throw bll;
+			
+		}
+		
 		return restaurantOrderDao.findById(id).get();
 	}
 
