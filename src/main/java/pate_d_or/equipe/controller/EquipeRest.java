@@ -43,6 +43,7 @@ public class EquipeRest
 	@Autowired 
 	private RestaurantOrderBLL restaurantOrderBll;
 	
+	
 	//=====================================================
 	//reservation
 	
@@ -113,6 +114,14 @@ public class EquipeRest
 	public ResponseEntity<RestaurantTable> findById(@PathVariable("id") int id)
 	{
 		return new ResponseEntity<>(this.retaurantTableBLL.findById(id), HttpStatus.OK);
+	}
+	
+	//-----------------------------------------
+	
+	@GetMapping("/table/resto/{id}")
+	public ResponseEntity<List<RestaurantTable>> findByRestaurantId(@PathVariable("id") int restaurantId)
+	{
+		return new ResponseEntity<>(this.retaurantTableBLL.findByRestaurantId(restaurantId), HttpStatus.OK);
 	}
 	
 	//-----------------------------------------

@@ -92,7 +92,8 @@ public class UserBLL {
 			}
 		}
 		
-		if (trueUser != null) {
+		if (trueUser != null) 
+		{
 			trueUser.setToken(generateToken());
 			trueUser.setExpirationTime(LocalDateTime.now().plusMinutes(USER_TOKEN_LIFETIME));
 			userDAO.save(trueUser);
@@ -110,8 +111,10 @@ public class UserBLL {
 	 * sur l'application, le token n'expire pas.
 	 */
 	
-	public User getByToken(String token) {
+	public User getByToken(String token) 
+	{
 		User user = userDAO.findByTokenAndExpirationTimeAfter(token, LocalDateTime.now());
+		
 		if (user != null) {
 			user.setExpirationTime(LocalDateTime.now().plusMinutes(USER_TOKEN_LIFETIME));
 			userDAO.save(user);
