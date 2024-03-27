@@ -20,6 +20,7 @@ import pate_d_or.equipe.bll.ReservationBLL;
 import pate_d_or.equipe.bll.RestaurantOrderBLL;
 import pate_d_or.equipe.bll.RestaurantTableBLL;
 import pate_d_or.equipe.bll.UserBLL;
+import pate_d_or.equipe.dto.BillDTO;
 import pate_d_or.equipe.entities.Reservation;
 import pate_d_or.equipe.entities.RestaurantOrder;
 import pate_d_or.equipe.entities.RestaurantTable;
@@ -226,6 +227,11 @@ public class EquipeRest
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
+	}
+
+	@GetMapping("/commandes/soldout")
+	public ResponseEntity<List<BillDTO>> getDetailBillWhereStateSoldAndOrderByIdTable() {
+		return new ResponseEntity<>(this.restaurantOrderBll.getDetailBillWhereStateSoldAndOrderByIdTable(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/commandes/bill/{id}")

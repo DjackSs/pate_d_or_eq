@@ -2,6 +2,7 @@ package pate_d_or.equipe.dal;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import java.util.List;
 
 import pate_d_or.equipe.entities.RestaurantOrder;
 
@@ -13,7 +14,7 @@ public interface RestaurantOrderDAO extends CrudRepository<RestaurantOrder, Inte
 			+ "JOIN Dishes d ON od.id_dish = d.id\r\n"
 			+ "WHERE o.state = 'sold'\r\n"
 			+ "ORDER BY o.id_table;", nativeQuery = true)
-	String getDetailBillWhereStateSoldAndOrderByIdTable(int id);
+	List<Object[]> getDetailBillWhereStateSoldAndOrderByIdTable();
 
 	@Query( value = "select sum(Dishes.price) as bill from Dishes\r\n"
 			+ "inner join Orders_Dishes on Orders_Dishes.id_dish = Dishes.id\r\n"
