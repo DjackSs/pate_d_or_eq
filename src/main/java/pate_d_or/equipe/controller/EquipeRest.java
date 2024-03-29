@@ -235,6 +235,7 @@ public class EquipeRest
 		return new ResponseEntity<>(this.restaurantOrderBll.getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(idRestaurant), HttpStatus.OK);
 	}
 	
+	
 	@GetMapping("/commandes/table/{id}")
 	public ResponseEntity<List<RestaurantOrder>> getByTableId(@PathVariable("id") int tableId) 
 	{
@@ -243,6 +244,7 @@ public class EquipeRest
 		
 		
 	}
+	
 	
 	
 	
