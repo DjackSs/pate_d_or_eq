@@ -11,6 +11,7 @@ import pate_d_or.equipe.dal.RestaurantOrderDAO;
 import pate_d_or.equipe.dto.BillDTO;
 import pate_d_or.equipe.entities.Dish;
 import pate_d_or.equipe.entities.RestaurantOrder;
+import pate_d_or.equipe.entities.RestaurantTable;
 
 @Service
 public class RestaurantOrderBLL {
@@ -39,8 +40,8 @@ public class RestaurantOrderBLL {
 		return this.restaurantOrderDao.findByTableId(tableId);
 	}
 
-	public List<BillDTO> getDetailBillWhereStateSoldAndOrderByIdTable() {
-		List<Object[]> result = this.restaurantOrderDao.getDetailBillWhereStateSoldAndOrderByIdTable();
+	public List<BillDTO> getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(int idRestaurant) {
+		List<Object[]> result = this.restaurantOrderDao.getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(idRestaurant);
 		List<BillDTO> bills = new ArrayList<>();
 		for (Object[] current : result) {
 			BillDTO bill = new BillDTO();
@@ -51,6 +52,7 @@ public class RestaurantOrderBLL {
 		}
 		return bills;
 	}
+
 
 	public Float getTotalAmountOrderBillById(int id)
 	{

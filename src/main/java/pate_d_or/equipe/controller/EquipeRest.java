@@ -230,9 +230,9 @@ public class EquipeRest
 		
 	}
 
-	@GetMapping("/commandes/soldout")
-	public ResponseEntity<List<BillDTO>> getDetailBillWhereStateSoldAndOrderByIdTable() {
-		return new ResponseEntity<>(this.restaurantOrderBll.getDetailBillWhereStateSoldAndOrderByIdTable(), HttpStatus.OK);
+	@GetMapping("/commandes/resto/{id}")
+	public ResponseEntity<List<BillDTO>> getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(@PathVariable("id") int idRestaurant) {
+		return new ResponseEntity<>(this.restaurantOrderBll.getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(idRestaurant), HttpStatus.OK);
 	}
 	
 	@GetMapping("/commandes/table/{id}")
