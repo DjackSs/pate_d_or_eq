@@ -9,6 +9,6 @@ import pate_d_or.equipe.entities.RestaurantTable;
 public interface RestaurantTableDAO extends CrudRepository<RestaurantTable, Integer> 
 {
 	
-	public List<RestaurantTable> findByRestaurantId(int restaurantId);
+	List<RestaurantTable> findByRestaurantId(int restaurantId);
 
 }

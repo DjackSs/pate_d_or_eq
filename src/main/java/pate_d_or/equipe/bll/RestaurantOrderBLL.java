@@ -34,6 +34,11 @@ public class RestaurantOrderBLL {
 		
 		return restaurantOrderDao.findById(id).get();
 	}
+	
+	public List<RestaurantOrder> getByTableId(int tableId)
+	{
+		return this.restaurantOrderDao.findByTableId(tableId);
+	}
 
 	public List<BillDTO> getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(int idRestaurant) {
 		List<Object[]> result = this.restaurantOrderDao.getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(idRestaurant);
