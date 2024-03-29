@@ -10,6 +10,8 @@ import pate_d_or.equipe.entities.RestaurantOrder;
 
 public interface RestaurantOrderDAO extends CrudRepository<RestaurantOrder, Integer> 
 {
+	
+	List<RestaurantOrder> findByTableId(int tableId);
 
 	@Query( value = "SELECT o.id_table AS table_number, d.name AS dish_name, d.price AS dish_price\r\n"
 			+"FROM Orders o\r\n"
