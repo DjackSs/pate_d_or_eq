@@ -279,7 +279,8 @@ public class EquipeRest
 	@PutMapping("/commandes/{id}/ajouter-plats")
 	public ResponseEntity<Void> updateDishes(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) {
 		//RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
-		restaurantOrderBll.updateDishes(id, restaurantOrder);
+		//restaurantOrderBll.updateDishes(id, restaurantOrder);
+		restaurantOrderBll.save(restaurantOrder);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
