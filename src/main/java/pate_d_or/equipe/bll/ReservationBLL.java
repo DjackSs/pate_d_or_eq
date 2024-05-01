@@ -40,6 +40,7 @@ public class ReservationBLL
 	{
 		BLLException bll = new BLLException();
 		
+		
 		if(this.reservationDAO.findById(id).isEmpty())
 		{
 			bll.addError("reservation", "Reservation inconue");
@@ -47,6 +48,7 @@ public class ReservationBLL
 		}
 		
 		return this.reservationDAO.findById(id).get();
+		
 	}
 	
 	//-----------------------------------------
@@ -70,7 +72,7 @@ public class ReservationBLL
 		
 		if(!RESERVATION_STATES.contains(reservation.getState()))
 		{
-			bll.addError("reservationState", "Etat de réservation inivalide");
+			bll.addError("reservationState", "Etat de réservation invalide");
 		}
 		
 		if(bll.getErrors().size() != 0)
