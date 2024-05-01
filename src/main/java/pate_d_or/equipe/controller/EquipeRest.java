@@ -1,6 +1,7 @@
 package pate_d_or.equipe.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,22 +50,23 @@ public class EquipeRest
 	//reservation
 	
 	@GetMapping("/resa")
-	public ResponseEntity<List<Reservation>> findAll() {
+	public ResponseEntity<List<Reservation>> findAll() 
+	{
 		return new ResponseEntity<>(this.reservationBLL.findAll(), HttpStatus.OK);
 	}
 	
 	//-----------------------------------------
 	
 	@GetMapping("/resa/{id}")
-	public ResponseEntity<Reservation> findResaById(@PathVariable("id") int id) 
+	public ResponseEntity<?> findResaById(@PathVariable("id") int id) 
 	{
 		try
 		{
-			return new ResponseEntity<>(this.reservationBLL.findById(id), HttpStatus.OK);
+			return new ResponseEntity<Reservation>(this.reservationBLL.findById(id), HttpStatus.OK);
 		}
 		catch (BLLException error)
 		{
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
 		}
 		
 	}
@@ -72,36 +74,37 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@GetMapping("/resa/restaurant/{id}")
-	public ResponseEntity<List<Reservation>> findAllByRestaurantId(@PathVariable("id") int id) {
-		return new ResponseEntity<>(this.reservationBLL.findAllByRestaurantId(id), HttpStatus.OK);
+	public ResponseEntity<List<Reservation>> findAllByRestaurantId(@PathVariable("id") int id) 
+	{
+		
+		return new ResponseEntity<List<Reservation>>(this.reservationBLL.findAllByRestaurantId(id), HttpStatus.OK);
+		 
+		
 	}
 	
 	//-----------------------------------------
 	
 	@PutMapping("/resa/{id}")
-	public ResponseEntity<Void> updateReservation(@PathVariable("id") int id, @RequestBody Reservation reservation)
+	public ResponseEntity<?> updateReservation(@PathVariable("id") int id, @RequestBody Reservation reservation)
 	{
 		try
 		{
-			Reservation updateReservation = this.reservationBLL.findById(id);
-			
-			//Change uniquement le status de la réservation
-			updateReservation.setState(reservation.getState());
-			
-			//si le client est arrivé alors on changge aussi le status de sa table
-			if("here".equalsIgnoreCase(reservation.getState()))
-			{
-				reservation.getTable().setState("pres");
-			}
-			
-			this.reservationBLL.save(updateReservation);
+			this.reservationBLL.update(reservation, id);
 			
 			return new ResponseEntity<>(HttpStatus.OK);
-			
 		}
 		catch (BLLException error)
 		{
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			for(String errorType : error.getErrors().keySet() )
+			{
+				if("reservationState".equals(errorType))
+				{
+					return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+					
+				}
+			}
+			
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
 		}
 		
 		

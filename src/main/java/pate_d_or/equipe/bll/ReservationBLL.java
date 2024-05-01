@@ -1,5 +1,7 @@
 package pate_d_or.equipe.bll;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import pate_d_or.equipe.entities.Reservation;
 @Service
 public class ReservationBLL 
 {
+	private static final List<String> RESERVATION_STATES = new ArrayList<>(Arrays.asList("hold", "gran", "deni", "here"));
+	
 	@Autowired
 	private ReservationDAO reservationDAO;
 	
@@ -25,7 +29,9 @@ public class ReservationBLL
 	
 	public List<Reservation> findAllByRestaurantId(int id)
 	{
+			
 		return (List<Reservation>) this.reservationDAO.findAllByRestaurantId(id);
+		
 	}
 	
 	//-----------------------------------------
@@ -36,7 +42,7 @@ public class ReservationBLL
 		
 		if(this.reservationDAO.findById(id).isEmpty())
 		{
-			bll.addError("reservation", "Resservation inconue");
+			bll.addError("reservation", "Reservation inconue");
 			throw bll;
 		}
 		
@@ -45,9 +51,44 @@ public class ReservationBLL
 	
 	//-----------------------------------------
 	
-	public void save(Reservation reservation)
+	public void update(Reservation reservation, int id) throws BLLException
 	{
-		this.reservationDAO.save(reservation);
+		
+		BLLException bll = new BLLException();
+		
+		Reservation updateReservation = null;
+		
+		try 
+		{
+			updateReservation = this.findById(id);
+			
+		} 
+		catch (BLLException error) 
+		{
+			bll.addError("reservation", "Reservation inconue");
+		}
+		
+		if(!RESERVATION_STATES.contains(reservation.getState()))
+		{
+			bll.addError("reservationState", "Etat de réservation inivalide");
+		}
+		
+		if(bll.getErrors().size() != 0)
+		{
+			throw bll;
+		}
+				
+		updateReservation.setState(reservation.getState());
+		
+		//si le client est arrivé alors on changge aussi le status de sa table
+		if("here".equals(reservation.getState()))
+		{
+			updateReservation.getTable().setState("pres");
+		}
+		
+		this.reservationDAO.save(updateReservation);
+		
+		
 	}
 
 }
