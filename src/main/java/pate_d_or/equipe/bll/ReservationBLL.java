@@ -27,19 +27,11 @@ public class ReservationBLL
 	
 	//-----------------------------------------
 	
-	public List<Reservation> findAllByRestaurantId(int id) throws BLLException
+	public List<Reservation> findAllByRestaurantId(int id)
 	{
-		BLLException bll = new BLLException();
+			
+		return (List<Reservation>) this.reservationDAO.findAllByRestaurantId(id);
 		
-		List<Reservation> reservations = (List<Reservation>) this.reservationDAO.findAllByRestaurantId(id);
-		
-		if(reservations.isEmpty())
-		{
-			bll.addError("reservations", "Pas de reservation pour ce restaurant");
-			throw bll;
-		}
-		
-		return reservations;
 	}
 	
 	//-----------------------------------------

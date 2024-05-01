@@ -74,16 +74,12 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@GetMapping("/resa/restaurant/{id}")
-	public ResponseEntity<?> findAllByRestaurantId(@PathVariable("id") int id) 
+	public ResponseEntity<List<Reservation>> findAllByRestaurantId(@PathVariable("id") int id) 
 	{
-		try 
-		{
-			return new ResponseEntity<>(this.reservationBLL.findAllByRestaurantId(id), HttpStatus.OK);
-		} 
-		catch (BLLException error) 
-		{
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
-		}
+		
+		return new ResponseEntity<List<Reservation>>(this.reservationBLL.findAllByRestaurantId(id), HttpStatus.OK);
+		 
+		
 	}
 	
 	//-----------------------------------------
