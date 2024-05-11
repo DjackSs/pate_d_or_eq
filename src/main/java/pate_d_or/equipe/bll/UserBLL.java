@@ -2,6 +2,8 @@ package pate_d_or.equipe.bll;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.List;
@@ -26,6 +28,7 @@ public class UserBLL {
 	private static final int USER_LASTNAME_MAX_LENGTH = 40;
 	private static final int USER_EMAIL_MAX_LENGTH = 60;
 	private static final int USER_PASSWORD_MAX_LENGTH = 60;
+	private static final List<String> USER_ROLE = new ArrayList<>(Arrays.asList("staf", "cust"));
 	private static final String EMAIL_REGEX = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$";
 	//The password must contain at least one lowercase character, one uppercase character, one digit, one special character, and a length between 4 to 20.
 	//https://mkyong.com/regular-expressions/how-to-validate-password-with-regular-expression/
@@ -39,8 +42,8 @@ public class UserBLL {
 	
 	//====================================================================
 	
-	public List<User> getAllUsers() {
-	
+	public List<User> getAllUsers() 
+	{
 		return (List<User>) userDAO.findAll();
 	
 	}
@@ -98,6 +101,12 @@ public class UserBLL {
 			trueUser.setExpirationTime(LocalDateTime.now().plusMinutes(USER_TOKEN_LIFETIME));
 			userDAO.save(trueUser);
 		}
+		else
+		{
+			bll.addError("user", "Utilisateur invalide");
+			throw bll;
+			
+		}
 		
 		return trueUser;
 	
@@ -115,7 +124,8 @@ public class UserBLL {
 	{
 		User user = userDAO.findByTokenAndExpirationTimeAfter(token, LocalDateTime.now());
 		
-		if (user != null) {
+		if (user != null) 
+		{
 			user.setExpirationTime(LocalDateTime.now().plusMinutes(USER_TOKEN_LIFETIME));
 			userDAO.save(user);
 		}
@@ -124,9 +134,12 @@ public class UserBLL {
 	
 	//--------------------------------------------------------------------
 	
-	public void logout(String token) {
+	public void logout(String token) 
+	{
 		User user = userDAO.findByTokenAndExpirationTimeAfter(token, LocalDateTime.now());
-		if (user != null) {
+		
+		if (user != null) 
+		{
 			user.setToken(null);
 			user.setExpirationTime(null);
 			userDAO.save(user);
@@ -135,11 +148,34 @@ public class UserBLL {
 	
 	//--------------------------------------------------------------------
 	
-	public void saveOrUpdate(User user) throws BLLException {
+	public void saveOrUpdate(User user) throws BLLException 
+	{
 		BLLException bll = new BLLException ();
 		
+		User oldUser = null;
+		
+		if(user.getId() != 0)
+		{
+			try
+			{
+				oldUser = this.getUserById(user.getId());
+				user.setToken(oldUser.getToken());
+				user.setExpirationTime(oldUser.getExpirationTime());
+				user.setMessages(oldUser.getMessages());
+				user.setRole(oldUser.getRole());
+				
+			}
+			catch(BLLException error)
+			{
+				bll.addError("user", "Utilisateur inconnu");
+				throw bll;
+			}
+			
+		}
+		
 		//name
-		if(!StringUtils.isBlank(user.getName())) {
+		if(!StringUtils.isBlank(user.getName())) 
+		{
 			if(user.getName().trim().length() > USER_NAME_MAX_LENGTH) {
 				bll.addError("nameSize", "Votre prénom est trop long");
 						
@@ -150,13 +186,25 @@ public class UserBLL {
 				
 			}
 			
-		} else {
-			bll.addError("nameSize", "Veuillez saisir un prénom");
+			
+		} 
+		else
+		{
+			if(oldUser != null)
+			{
+				user.setName(oldUser.getName());
+			}
+			else
+			{
+				bll.addError("nameSize", "Veuillez saisir un prénom");
+			}
+			
 		}
 		
 		
 		//lastname
-		if(!StringUtils.isBlank(user.getLastname())) {
+		if(!StringUtils.isBlank(user.getLastname())) 
+		{
 			if(user.getLastname().trim().length() > USER_LASTNAME_MAX_LENGTH) {
 				bll.addError("lastnameSize", "Votre nom est trop long");
 						
@@ -167,8 +215,19 @@ public class UserBLL {
 				
 			}
 			
-		} else {
-			bll.addError("lastnameSize", "Veuillez saisir un nom");
+
+		} 
+		else 
+		{
+			if(oldUser != null)
+			{
+				user.setLastname(oldUser.getLastname());
+			}
+			else
+			{
+				bll.addError("lastnameSize", "Veuillez saisir un nom");
+			}
+			
 		}
 		
 		
@@ -189,8 +248,18 @@ public class UserBLL {
 				bll.addError("emailMatch", "Votre adresse est invalide");
 			}
 			
-		} else {
-			bll.addError("emailSize", "Veuillez saisir une adresse mail");
+		} 
+		else 
+		{
+			if(oldUser != null)
+			{
+				user.setEmail(oldUser.getEmail());
+			}
+			else
+			{
+				bll.addError("emailSize", "Veuillez saisir une adresse mail");
+			}
+			
 		}
 		
 		
@@ -210,8 +279,24 @@ public class UserBLL {
 				bll.addError("password", "Mot de passe invalide");
 			}
 				
-		} else {
-			bll.addError("password", "Mot de passe invalide");
+		} 
+		else 
+		{
+			if(oldUser != null)
+			{
+				user.setPassword(oldUser.getPassword());
+			}
+			else
+			{
+				bll.addError("password", "Mot de passe invalide");
+			}
+			
+		}
+		
+		//role
+		if(!USER_ROLE.contains(user.getRole())) 
+		{
+			bll.addError("role", "role invalide");
 		}
 		
 		
@@ -219,17 +304,21 @@ public class UserBLL {
 			throw bll;
 		}
 		
-		//hashing the password
-		user.setPassword(this.toHash(user.getPassword()));
+		if(oldUser == null)
+		{
+			//hashing the password
+			user.setPassword(this.toHash(user.getPassword()));
+		}
 		
-	
+		
 		userDAO.save(user);
 		
 	}
 	
 	//--------------------------------------------------------------------
 	
-	public void deleteById(int id) {
+	public void deleteById(int id) 
+	{
 		userDAO.deleteById(id);
 	}
 	
@@ -251,7 +340,8 @@ public class UserBLL {
 	
 	//--------------------------------------------------------------------
 	
-	private String generateToken() {
+	private String generateToken() 
+	{
 		byte[] randomBytes = new byte[48];
 		secureRandom.nextBytes(randomBytes);
 		return base64encoder.encodeToString(randomBytes);
