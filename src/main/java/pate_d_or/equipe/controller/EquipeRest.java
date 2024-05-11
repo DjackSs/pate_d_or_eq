@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -131,9 +132,16 @@ public class EquipeRest
 		catch(BLLException error)
 		{
 			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
+			
 		}
 		
 	}
+	
+	public ResponseEntity<Object> restException(Map<String,String> errors, HttpStatus errorCode)
+	{
+		return new ResponseEntity<>(errors, errorCode);
+	}
+	
 	
 	//-----------------------------------------
 	
@@ -175,59 +183,107 @@ public class EquipeRest
 	//=====================================================
 	//User
 	
-	@GetMapping("/users")
-	public ResponseEntity<List<User>> getAllUsers() throws BLLException {
+	@GetMapping("/user")
+	public ResponseEntity<List<User>> getAllUsers()
+	{
 		return new ResponseEntity<>(userBLL.getAllUsers(), HttpStatus.OK);
 	}
+	
+	//-----------------------------------------
 
-	@GetMapping("/users/{id}")
-	public ResponseEntity<User> getUserById(@PathVariable("id") int id) 
+	@GetMapping("/user/{id}")
+	public ResponseEntity<?> getUserById(@PathVariable("id") int id) 
 	{
 		try
 		{
-			return new ResponseEntity<>( userBLL.getUserById(id), HttpStatus.OK);
+			return new ResponseEntity<User>(userBLL.getUserById(id), HttpStatus.OK);
 		}
 		catch (BLLException error)
 		{
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
 		}
 		
-	}
-
-	@PostMapping("/users")
-	public ResponseEntity<User> insertUser(@RequestBody User user) throws BLLException {
-		
-		if ("staf".equals(user.getRole())) 
-		{
-			try 
-			{
-				userBLL.saveOrUpdate(user);
-			} 
-			catch (BLLException e) 
-			{
-				
-				throw new BLLException("Impossible de créer un nouvel utilisateur", e);
-			}
-			
-			return new ResponseEntity<>(user, HttpStatus.CREATED);
-		}
-		
-		return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
-	}
-
-	@PutMapping("/users/{id}")
-	public ResponseEntity<Void> updateUser(@PathVariable("id") int id, @RequestBody User user) throws BLLException {
-		user.setId(id);
-		try {
-			userBLL.saveOrUpdate(user);
-		} catch (BLLException e) {
-			throw new BLLException("Impossible de mettre à jour l'utilisateur", e);
-		}
-		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/users/{id}")
-	public ResponseEntity<Void> deleteUser(@PathVariable("id") int id) {
+	//-----------------------------------------
+
+	@PostMapping("/user")
+	public ResponseEntity<?> insertUser(@RequestBody User user) throws BLLException 
+	{
+		
+		try 
+		{
+			userBLL.saveOrUpdate(user);
+			return new ResponseEntity<User>(user, HttpStatus.CREATED);
+		} 
+		catch (BLLException error) 
+		{
+			
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+		}
+			
+		
+	}
+	
+	//-----------------------------------------
+	
+	/*
+	 * Endpoint utilisé pour authentifier un utilisateur au moment du login.
+	 * Renvoie une erreur 401 "Unauthorized" si le couple identifiant / mdp est faux
+	 * Renvoie un user avec son token si la connexion réussit
+	 */
+	@PostMapping("/user/login")
+	public ResponseEntity<?> get(@RequestBody User user)
+	{
+		try
+		{
+			return new ResponseEntity<User>(userBLL.getByLoginAndPassword(user.getEmail(), user.getPassword()), HttpStatus.OK);
+		}
+		catch(BLLException error)
+		{
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.UNAUTHORIZED);
+			
+		}
+		
+	}
+	
+	//-----------------------------------------
+	
+	/*
+	 * Endpoint utilisé pour deconnecter un utilisateur grace à son token
+	 */
+	@GetMapping("/user/logout")
+	public void logout(@RequestHeader("token") String token) 
+	{
+		userBLL.logout(token);
+	}
+	
+	//-----------------------------------------
+
+	@PutMapping("/user/{id}")
+	public ResponseEntity<?> updateUser(@PathVariable("id") int id, @RequestBody User user)
+	{
+		user.setId(id);
+		
+		try 
+		{
+			userBLL.saveOrUpdate(user);
+			return new ResponseEntity<User>(user, HttpStatus.CREATED);
+		} 
+		catch (BLLException error) 
+		{
+			
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+		}
+		
+		
+	}
+	
+	//-----------------------------------------
+	
+	@DeleteMapping("/user/{id}")
+	public ResponseEntity<Void> deleteUser(@PathVariable("id") int id) 
+	{
 		userBLL.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
