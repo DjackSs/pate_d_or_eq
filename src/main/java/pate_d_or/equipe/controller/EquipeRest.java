@@ -122,9 +122,17 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@GetMapping("/table/{id}")
-	public ResponseEntity<RestaurantTable> findById(@PathVariable("id") int id)
+	public ResponseEntity<?> findById(@PathVariable("id") int id)
 	{
-		return new ResponseEntity<>(this.retaurantTableBLL.findById(id), HttpStatus.OK);
+		try
+		{
+			return new ResponseEntity<RestaurantTable>(this.retaurantTableBLL.findById(id), HttpStatus.OK);
+		}
+		catch(BLLException error)
+		{
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
+		}
+		
 	}
 	
 	//-----------------------------------------
@@ -138,14 +146,29 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@PutMapping("/table/{id}")
-	public ResponseEntity<Void> updateRestaurantTable(@PathVariable("id") int id, @RequestBody RestaurantTable restaurantTable)
+	public ResponseEntity<?> updateRestaurantTable(@PathVariable("id") int id, @RequestBody RestaurantTable restaurantTable)
 	{
-		RestaurantTable updateRestaurantTable = this.retaurantTableBLL.findById(id);
-		updateRestaurantTable.setState(restaurantTable.getState());
+		try
+		{
+			this.retaurantTableBLL.update(restaurantTable, id);
+			
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		catch(BLLException error)
+		{
+			for(String errorType : error.getErrors().keySet() )
+			{
+				if("tableState".equals(errorType))
+				{
+					return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+					
+				}
+			}
+			
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
+			
+		}
 		
-		this.retaurantTableBLL.save(updateRestaurantTable);
-		
-		return new ResponseEntity<>(HttpStatus.OK);
 		
 	}
 	
