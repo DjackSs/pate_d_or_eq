@@ -1,17 +1,18 @@
 package pate_d_or.equipe.bll;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,9 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import pate_d_or.equipe.dal.DALException;
 import pate_d_or.equipe.dal.UserDAO;
+import pate_d_or.equipe.entities.Message;
 import pate_d_or.equipe.entities.User;
 
 
@@ -230,8 +233,8 @@ class UserBLLTest
 			String rightToken = "token";
 			LocalDateTime time = LocalDateTime.now();
 			
-			when(this.dao.findByTokenAndExpirationTimeAfter(rightToken, time)).thenReturn(userMock);
-			when(this.dao.save(userMock)).thenReturn(userMock);
+			Mockito.when(this.dao.findByTokenAndExpirationTimeAfter(rightToken, time)).thenReturn(userMock);
+			Mockito.when(this.dao.save(userMock)).thenReturn(userMock);
 			
 			User userResult = null;
 			
@@ -263,8 +266,8 @@ class UserBLLTest
 			String rightToken = "token";
 			LocalDateTime expiredTime = LocalDateTime.of(1900, 01, 01, 0, 0);
 			
-			when(this.dao.findByTokenAndExpirationTimeAfter(rightToken, LocalDateTime.now())).thenReturn(userMock);
-			when(this.dao.save(userMock)).thenReturn(userMock);
+			Mockito.when(this.dao.findByTokenAndExpirationTimeAfter(rightToken, LocalDateTime.now())).thenReturn(userMock);
+			Mockito.when(this.dao.save(userMock)).thenReturn(userMock);
 			
 			//-----------------------------------------------
 			//assert
@@ -287,8 +290,8 @@ class UserBLLTest
 			//-----------------------------------------------
 			//set up test
 			
-			when(this.dao.findByTokenAndExpirationTimeAfter(null, LocalDateTime.now())).thenReturn(null);
-			when(this.dao.save(userMock)).thenReturn(userMock);
+			Mockito.when(this.dao.findByTokenAndExpirationTimeAfter(null, LocalDateTime.now())).thenReturn(null);
+			Mockito.when(this.dao.save(userMock)).thenReturn(userMock);
 			
 			//-----------------------------------------------
 			//assert
@@ -333,8 +336,8 @@ class UserBLLTest
 			String rightToken = "token";
 			LocalDateTime time = LocalDateTime.now();
 			
-			when(this.dao.findByTokenAndExpirationTimeAfter(rightToken, LocalDateTime.now())).thenReturn(userMock);
-			when(this.dao.save(userMock)).thenReturn(userMock);
+			Mockito.when(this.dao.findByTokenAndExpirationTimeAfter(rightToken, LocalDateTime.now())).thenReturn(userMock);
+			Mockito.when(this.dao.save(userMock)).thenReturn(userMock);
 			
 			//-----------------------------------------------
 			//execute action
@@ -367,6 +370,157 @@ class UserBLLTest
 		
 		@InjectMocks
 		private UserBLL userBLL;
+		
+		private static User dataBaseUser;
+		
+		//===============================
+		
+		@BeforeAll
+		static void initDataUser()
+		{
+			List<Message> messages = new ArrayList<>();
+			Message messageMock = new Message();
+			messageMock.setId(1);
+			
+			messages.add(messageMock);
+			
+			dataBaseUser = new User();
+			dataBaseUser.setId(1);
+			dataBaseUser.setName("userName");
+			dataBaseUser.setLastname("userLastName");	
+			dataBaseUser.setEmail("user@mail.com");
+			dataBaseUser.setPassword("ValidPassord1!");
+			dataBaseUser.setRole("staf");
+			dataBaseUser.setMessages(messages);
+			
+		}
+		
+		//===============================
+		//create user
+		
+		@Test
+		void saveOrUpdate_validUser_saveUser() throws BLLException
+		{
+			User validUser = new User();
+			validUser.setName("userName");
+			validUser.setLastname("userLastName");	
+			validUser.setEmail("user@mail.com");
+			validUser.setPassword("ValidPassord1!");
+			validUser.setRole("staf");
+			
+			Mockito.when(this.dao.save(validUser)).thenReturn(validUser);
+			
+			this.userBLL.saveOrUpdate(validUser);
+			
+			assertNotNull(validUser);
+		}
+		
+		//-----------------------------------
+		
+		@Test
+		void saveOrUpdate_withSameCredentials_createTwoUsersWithDifferentPassword() throws BLLException
+		{
+			//-----------------------------------------------
+			//set up mock
+			
+			User user1 = new User();
+			user1.setName("existingUserName");
+			user1.setLastname("existingUserLastName");	
+			user1.setEmail("existingUser@mail.com");
+			user1.setPassword("ValidPassord1!");
+			user1.setRole("staf");
+			
+			User user2 = new User();
+			user2.setName("existingUserName");
+			user2.setLastname("existingUserLastName");	
+			user2.setEmail("existingUser@mail.com");
+			user2.setPassword("ValidPassord1!");
+			user2.setRole("staf");
+			
+			//-----------------------------------------------
+			//set up test
+			
+			Mockito.when(this.dao.save(user1)).thenReturn(user1);
+			Mockito.when(this.dao.save(user2)).thenReturn(user2);
+			
+			//-----------------------------------------------
+			//execute action
+			
+			this.userBLL.saveOrUpdate(user1);
+			this.userBLL.saveOrUpdate(user2);
+			
+			//-----------------------------------------------
+			//assert
+			
+			assertAll("Two Users with same credentials should have diferent encrypted password",
+				    () -> assertEquals(user1.getName(), user2.getName()),
+				    () -> assertEquals(user1.getLastname(), user2.getLastname()),
+				    () -> assertEquals(user1.getEmail(), user2.getEmail()),
+				    () -> assertEquals(user1.getRole(), user2.getRole()),
+				    () -> assertNotEquals(user1.getPassword(), user2.getPassword())
+				);
+			
+		}
+		
+		//-----------------------------------
+		
+		@Test
+		void saveOrUpdate_withEmailThatDoNotMatchRegex_throwBLLException()
+		{
+			User invalidUser = new User();
+			invalidUser.setName("userName");
+			invalidUser.setLastname("userLastName");	
+			invalidUser.setEmail("invalidEmail");
+			invalidUser.setPassword("ValidPassord1!");
+			invalidUser.setRole("staf");
+			
+			assertThrows(BLLException.class, ()-> this.userBLL.saveOrUpdate(invalidUser), "insert with invalid User email should throw BLLException");
+			
+		}
+		
+		//-----------------------------------
+		
+		@Test
+		void saveOrUpdate_withPasswordThatDoNotMatchRegex_throwBLLException()
+		{
+			User invalidUser = new User();
+			invalidUser.setName("userName");
+			invalidUser.setLastname("userLastName");	
+			invalidUser.setEmail("user@mail.com");
+			invalidUser.setPassword("invalidPassword");
+			invalidUser.setRole("staf");
+			
+			assertThrows(BLLException.class, ()-> this.userBLL.saveOrUpdate(invalidUser), "insert with invalid User password should throw BLLException");
+			
+		}
+		
+		//===============================
+		//update user
+		
+		@Test
+		void saveOrUpdate_withSameUser_returnDataBaseUser() throws DALException, BLLException
+		{
+			User sameUser = dataBaseUser;
+			
+			Optional<User> optionalDatabaseUser = Optional.of(dataBaseUser);
+			
+			Mockito.when(this.dao.findById(sameUser.getId())).thenReturn(optionalDatabaseUser);
+			Mockito.when(this.dao.save(sameUser)).thenReturn(sameUser);
+			
+			this.userBLL.saveOrUpdate(sameUser);
+			
+			assertAll("update user with same credentials should return same user",
+				    () -> assertEquals(sameUser.getName(), dataBaseUser.getName()),
+				    () -> assertEquals(sameUser.getLastname(), dataBaseUser.getLastname()),
+				    () -> assertEquals(sameUser.getEmail(), dataBaseUser.getEmail()),
+				    () -> assertEquals(sameUser.getRole(), dataBaseUser.getRole()),
+				    () -> assertEquals(sameUser.getPassword(), dataBaseUser.getPassword())
+				);
+		}
+		
+		//-----------------------------------
+		
+		
 		
 	}
 
