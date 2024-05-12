@@ -1,5 +1,6 @@
 package pate_d_or.equipe.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -255,7 +256,7 @@ public class EquipeRest
 	@GetMapping("/user/logout")
 	public void logout(@RequestHeader("token") String token) 
 	{
-		userBLL.logout(token);
+		userBLL.logout(token, LocalDateTime.now());
 	}
 	
 	//-----------------------------------------

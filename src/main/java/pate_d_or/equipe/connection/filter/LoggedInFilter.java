@@ -1,8 +1,8 @@
 package pate_d_or.equipe.connection.filter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -14,8 +14,8 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import pate_d_or.equipe.bll.BLLException;
 import pate_d_or.equipe.bll.UserBLL;
-import pate_d_or.equipe.entities.User;
 
 @Component
 public class LoggedInFilter implements Filter {
@@ -45,37 +45,28 @@ public class LoggedInFilter implements Filter {
 		
 		//=========================================================================
 		//
+
 		
 		/*
 		 * Si le token n'est pas renseigné, on interdit l'accès
-		 */
-
-		String token = httpReq.getHeader("token");
-		
-		if (StringUtils.isBlank(token)) 
-		{
-			httpResp.sendError(HttpStatus.UNAUTHORIZED.value());
-			return;
-		}
-		
-		
-		/*
 		 * Si le token est renseigné mais ne correspond à aucun user
 		 * on interdit l'accès
 		 * Sinon, on autorise l'accès
 		 */
-
-		User user = service.getByToken(token);
-		
-		if (user == null) 
+		try
+		{
+			
+			service.getByToken(httpReq.getHeader("token"), LocalDateTime.now());
+			chain.doFilter(request, response);
+			
+		}
+		catch(BLLException error)
 		{
 			httpResp.sendError(HttpStatus.UNAUTHORIZED.value());
-		} 
-		else 
-		{
-			chain.doFilter(request, response);
-		
 		}
+		
+		
+
 		
 
 	}

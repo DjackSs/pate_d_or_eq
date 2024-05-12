@@ -20,7 +20,7 @@ import pate_d_or.equipe.entities.RestaurantTable;
 
 
 @SpringBootTest
-@DisplayName("Test for RestaurantTableBLLTest")
+@DisplayName("Test for RestaurantTableBLL")
 class RestaurantTableBLLTest 
 {
 
@@ -38,7 +38,7 @@ class RestaurantTableBLLTest
 		private RestaurantTableBLL restaurantTableBLL;
 		
 		@Test
-		void findById_withExistingId_returnRestaurantTable() throws BLLException 
+		void findById_withExistingId_returnRestaurantTable() throws BLLException
 		{
 			RestaurantTable tableMock = new RestaurantTable();
 			tableMock.setId(1);

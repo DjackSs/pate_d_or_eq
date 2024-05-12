@@ -120,23 +120,40 @@ public class UserBLL {
 	 * sur l'application, le token n'expire pas.
 	 */
 	
-	public User getByToken(String token) 
+	public User getByToken(String token, LocalDateTime time) throws BLLException 
 	{
-		User user = userDAO.findByTokenAndExpirationTimeAfter(token, LocalDateTime.now());
+		BLLException bll = new BLLException ();
 		
-		if (user != null) 
+		if (StringUtils.isBlank(token)) 
+		{
+			bll.addError("token", "token invalide");
+			throw bll;
+		}
+		
+		User user = userDAO.findByTokenAndExpirationTimeAfter(token, time);
+		
+		
+		if(user != null) 
 		{
 			user.setExpirationTime(LocalDateTime.now().plusMinutes(USER_TOKEN_LIFETIME));
 			userDAO.save(user);
+			
+			return user;
 		}
-		return user;
+		else
+		{
+			bll.addError("token", "token invalide");
+			throw bll;
+		}
+		
+		
 	}
 	
 	//--------------------------------------------------------------------
 	
-	public void logout(String token) 
+	public void logout(String token, LocalDateTime time) 
 	{
-		User user = userDAO.findByTokenAndExpirationTimeAfter(token, LocalDateTime.now());
+		User user = userDAO.findByTokenAndExpirationTimeAfter(token, time);
 		
 		if (user != null) 
 		{
