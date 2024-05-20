@@ -292,15 +292,16 @@ public class EquipeRest
 	//=====================================================
 	//restaurantOrder
 	
-	@GetMapping("/commandes")
+	@GetMapping("/commande")
 	public ResponseEntity<List<RestaurantOrder>> getAll() 
 	{
 		return new ResponseEntity<>(restaurantOrderBll.getAll(), HttpStatus.OK);
 	}
 	
+	//-----------------------------------------
 		
-	@GetMapping("/commandes/{id}")
-	public ResponseEntity<RestaurantOrder> getById(@PathVariable("id") int id) 
+	@GetMapping("/commande/{id}")
+	public ResponseEntity<?> getById(@PathVariable("id") int id) 
 	{
 		try
 		{
@@ -308,82 +309,100 @@ public class EquipeRest
 		}
 		catch (BLLException error)
 		{
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
 		}
 		
 	}
+	
+	//-----------------------------------------
 
-	@GetMapping("/commandes/resto/{id}")
+	@GetMapping("/commande/resto/{id}")
 	public ResponseEntity<List<BillDTO>> getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(@PathVariable("id") int idRestaurant) {
 		return new ResponseEntity<>(this.restaurantOrderBll.getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(idRestaurant), HttpStatus.OK);
 	}
 	
+	//-----------------------------------------
 	
-	@GetMapping("/commandes/table/{id}")
-	public ResponseEntity<List<RestaurantOrder>> getByTableId(@PathVariable("id") int tableId) 
-	{
-		
+	
+	@GetMapping("/commande/table/{id}")
+	public ResponseEntity<RestaurantOrder> getByTableId(@PathVariable("id") int tableId) 
+	{	
 		return new ResponseEntity<>(restaurantOrderBll.getByTableId(tableId), HttpStatus.OK);
-		
-		
 	}
 	
+	//-----------------------------------------
 	
-	
-	
-	@GetMapping("/commandes/bill/{id}")
+	@GetMapping("/commande/bill/{id}")
 	public ResponseEntity<Float> getTotalAmountOrderBillById(@PathVariable("id") int id)
 	{
 		return new ResponseEntity<>(this.restaurantOrderBll.getTotalAmountOrderBillById(id), HttpStatus.OK);
 	}
 	
-	@PostMapping("/commandes")
-	public ResponseEntity<RestaurantOrder> insert(@RequestBody RestaurantOrder restaurantOrder) {
-		restaurantOrderBll.save(restaurantOrder);
-		return new ResponseEntity<>(restaurantOrder, HttpStatus.CREATED);
-	}
+	//-----------------------------------------
 	
-	@PutMapping("/commandes/{id}/modifier-etat")
-	public ResponseEntity<Void> updateState(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) 
+	@PostMapping("/commande")
+	public ResponseEntity<?> insert(@RequestBody RestaurantOrder restaurantOrder) 
 	{
 		try
 		{
-			RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
-			restaurantOrderToUpdate.setState(restaurantOrder.getState());
-			restaurantOrderBll.save(restaurantOrderToUpdate);
-			return new ResponseEntity<>(HttpStatus.OK);
+			restaurantOrderBll.save(restaurantOrder);
+			return new ResponseEntity<>(restaurantOrder, HttpStatus.CREATED);
 			
 		}
 		catch(BLLException error)
 		{
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
 		}
 		
 	}
 	
-	@PutMapping("/commandes/{id}/ajouter-plats")
-	public ResponseEntity<Void> updateDishes(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) {
-		//RestaurantOrder restaurantOrderToUpdate = restaurantOrderBll.getById(id);
-		//restaurantOrderBll.updateDishes(id, restaurantOrder);
-		restaurantOrderBll.save(restaurantOrder);
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
+	//-----------------------------------------
 	
-	@DeleteMapping("/commandes/{id}")
-	public ResponseEntity<RestaurantOrder> deleteOrder(@PathVariable("id") int id) 
+	@PutMapping("/commande/{id}")
+	public ResponseEntity<?> updateState(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) 
 	{
+		restaurantOrder.setId(id);
+		
 		try
 		{
-			RestaurantOrder restaurantOrder = restaurantOrderBll.getById(id);
-			restaurantOrderBll.delete(id);
+			restaurantOrderBll.save(restaurantOrder);
 			return new ResponseEntity<>(restaurantOrder, HttpStatus.OK);
 			
 		}
 		catch(BLLException error)
 		{
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
 		}
 		
+	}
+	
+	//-----------------------------------------
+	
+	@PutMapping("/commande/{id}/ajouter-plats")
+	public ResponseEntity<?> updateDishes(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) 
+	{
+		restaurantOrder.setId(id);
+		
+		try
+		{	
+			restaurantOrderBll.updateDishes(restaurantOrder);
+			return new ResponseEntity<>(HttpStatus.OK);
+			
+		}
+		catch(BLLException error)
+		{
+			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
+	//-----------------------------------------
+	
+	@DeleteMapping("/commande/{id}")
+	public ResponseEntity<RestaurantOrder> deleteOrder(@PathVariable("id") int id) 
+	{
+			restaurantOrderBll.delete(id);
+			return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 }

@@ -36,7 +36,7 @@ public class LoggedInFilter implements Filter {
 		 * sans vérifier d'autre condition
 		 */
 		
-		if ("/login".equals(httpReq.getServletPath()) || "/pate_d_or/user".equals(httpReq.getServletPath()) || "OPTIONS".equals(httpReq.getMethod())) {
+		if ("/pate_d_or/user/login".equals(httpReq.getServletPath()) || "/pate_d_or/user".equals(httpReq.getServletPath()) || "OPTIONS".equals(httpReq.getMethod())) {
 				chain.doFilter(request, response);
 				return;
 			}
