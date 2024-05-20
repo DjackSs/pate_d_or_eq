@@ -2,6 +2,7 @@ package pate_d_or.equipe.bll;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,17 +10,22 @@ import org.springframework.stereotype.Service;
 
 import pate_d_or.equipe.dal.RestaurantOrderDAO;
 import pate_d_or.equipe.dto.BillDTO;
-import pate_d_or.equipe.entities.Dish;
 import pate_d_or.equipe.entities.RestaurantOrder;
-import pate_d_or.equipe.entities.RestaurantTable;
 
 @Service
-public class RestaurantOrderBLL {
+public class RestaurantOrderBLL 
+{
 	@Autowired private RestaurantOrderDAO restaurantOrderDao;
+	
+	private static final List<String> ORDER_STATE = new ArrayList<>(Arrays.asList("take", "read", "serv", "sold", null));
+	
+	//====================================================================
 	
 	public List<RestaurantOrder> getAll() {
 		return (List<RestaurantOrder>) restaurantOrderDao.findAll();
 	}
+	
+	//--------------------------------------------------------------------
 	
 	public RestaurantOrder getById(int id) throws BLLException 
 	{
@@ -35,45 +41,128 @@ public class RestaurantOrderBLL {
 		return restaurantOrderDao.findById(id).get();
 	}
 	
+	//--------------------------------------------------------------------
 	
-	public List<RestaurantOrder> getByTableId(int tableId)
+	public RestaurantOrder getByTableId(int tableId)
 	{
 		return this.restaurantOrderDao.findByTableId(tableId);
 	}
 	
+	//--------------------------------------------------------------------
+	
 
-	public List<BillDTO> getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(int idRestaurant) {
+	public List<BillDTO> getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(int idRestaurant) 
+	{
 		List<Object[]> result = this.restaurantOrderDao.getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(idRestaurant);
+		
 		List<BillDTO> bills = new ArrayList<>();
-		for (Object[] current : result) {
+		
+		for (Object[] current : result) 
+		{
 			BillDTO bill = new BillDTO();
 			bill.setTableNumber((int) current[0]);
 			bill.setDishName((String) current[1]);
 			bill.setDishPrice((BigDecimal) current[2]);
 			bills.add(bill);
 		}
+		
 		return bills;
 	}
-
+	
+	//--------------------------------------------------------------------
 
 	public Float getTotalAmountOrderBillById(int id)
 	{
 		return this.restaurantOrderDao.getTotalAmountOrderBillById(id);
 	}
 	
-	public void save(RestaurantOrder restaurantOrder) {
-		restaurantOrderDao.save(restaurantOrder);
+	//--------------------------------------------------------------------
+	
+	public void save(RestaurantOrder restaurantOrder) throws BLLException 
+	{
+		BLLException bll = new BLLException();
+		
+		RestaurantOrder oldOrder = null;
+		
+		if(restaurantOrder.getId() != 0)
+		{
+			try
+			{
+				oldOrder = this.getById(restaurantOrder.getId());
+				
+			}
+			catch(BLLException error)
+			{
+				bll.addError("order", "commande inconnu");
+				throw bll;
+			}
+			
+		}
+		
+		//state
+		if(!ORDER_STATE.contains(restaurantOrder.getState())) 
+		{
+			bll.addError("state", "Etat de la commande invalide");
+		}
+		else
+		{
+			if(oldOrder != null)
+			{
+				oldOrder.setState(restaurantOrder.getState());
+			}
+		}
+		
+		//table
+		if(restaurantOrder.getTable() == null && oldOrder == null)
+		{
+			bll.addError("table", "Table requise pour ouvrir une commande");
+		}
+		
+		
+		if(bll.getErrors().size() != 0) {
+			throw bll;
+		}
+		
+		
+		if(oldOrder != null)
+		{
+			restaurantOrderDao.save(oldOrder);
+		}
+		else
+		{
+			restaurantOrderDao.save(restaurantOrder);
+		}
+		
 	}
 	
-	public void updateDishes(int id,RestaurantOrder restaurantOrder) {
-		RestaurantOrder restaurantOrderToUpdate = restaurantOrderDao.findById(id).get();
-		List<Dish> dishesToAdd = restaurantOrderToUpdate.getDishes();
-		for (Dish current : restaurantOrder.getDishes()) {
-			dishesToAdd.add(current);
+	//--------------------------------------------------------------------
+	
+	public void updateDishes(RestaurantOrder restaurantOrder) throws BLLException 
+	{
+		BLLException bll = new BLLException();
+		
+		RestaurantOrder restaurantOrderToUpdate = null;
+		
+		try
+		{
+			restaurantOrderToUpdate = this.getById(restaurantOrder.getId());
+			
 		}
-		restaurantOrderToUpdate.setDishes(dishesToAdd);
+		catch (BLLException error)
+		{
+			bll.addError("order", "commande inconnu");
+			throw bll;
+		
+		}
+		
+		restaurantOrderToUpdate.setDishes(restaurantOrder.getDishes());
+		
 		restaurantOrderDao.save(restaurantOrderToUpdate);
+
+		
 	}
+	
+	//--------------------------------------------------------------------
 	
 	public void delete(int id) { restaurantOrderDao.deleteById(id); }
 
