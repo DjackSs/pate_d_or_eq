@@ -1,5 +1,7 @@
 package pate_d_or.equipe.connection.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +21,8 @@ public class LogoutController {
 	 * Endpoint utilisé pour deconnecter un utilisateur grace à son token
 	 */
 	@GetMapping
-	public void logout(@RequestHeader("token") String token) {
-		service.logout(token);
+	public void logout(@RequestHeader("token") String token) 
+	{
+		service.logout(token, LocalDateTime.now());
 	}
 }
