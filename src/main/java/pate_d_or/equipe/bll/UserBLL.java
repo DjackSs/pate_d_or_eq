@@ -179,7 +179,7 @@ public class UserBLL {
 				user.setToken(oldUser.getToken());
 				user.setExpirationTime(oldUser.getExpirationTime());
 				user.setMessages(oldUser.getMessages());
-				user.setRole(oldUser.getRole());
+				
 				
 			}
 			catch(BLLException error)
@@ -311,10 +311,27 @@ public class UserBLL {
 		}
 		
 		//role
-		if(!USER_ROLE.contains(user.getRole())) 
+		if(!StringUtils.isBlank(user.getRole())) 
 		{
-			bll.addError("role", "role invalide");
+			if(!USER_ROLE.contains(user.getRole())) 
+			{
+				bll.addError("role", "role invalide");
+			}
+			
 		}
+		else
+		{
+			if(oldUser != null)
+			{
+				user.setRole(oldUser.getRole());
+			}
+			else
+			{
+				bll.addError("role", "Veuillez saisir une role");
+			}
+			
+		}
+		
 		
 		
 		if(bll.getErrors().size() != 0) {

@@ -520,7 +520,117 @@ class UserBLLTest
 		
 		//-----------------------------------
 		
+		@Test
+		void saveOrUpdate_withEmptyValuesAndExistingId_returnDataBaseUser() throws DALException, BLLException
+		{
+			
+			//-----------------------------------------------
+			//set up mock
+			
+			Optional<User> optionalDatabaseUser = Optional.of(dataBaseUser);
+			
+			//-----------------------------------------------
+			//set up test
+			
+			User emptyUser = new User();
+			emptyUser.setId(1);
+			
+			
+			Mockito.when(this.dao.findById(emptyUser.getId())).thenReturn(optionalDatabaseUser);
+			Mockito.when(this.dao.save(emptyUser)).thenReturn(emptyUser);
+			
+			//-----------------------------------------------
+			//execute action
+			
+			this.userBLL.saveOrUpdate(emptyUser);
+			
+			//-----------------------------------------------
+			//assert
+			
+			assertAll("update user with empty credentials should return database user",
+				    () -> assertEquals(emptyUser.getName(), dataBaseUser.getName()),
+				    () -> assertEquals(emptyUser.getLastname(), dataBaseUser.getLastname()),
+				    () -> assertEquals(emptyUser.getEmail(), dataBaseUser.getEmail()),
+				    () -> assertEquals(emptyUser.getRole(), dataBaseUser.getRole()),
+				    () -> assertEquals(emptyUser.getPassword(), dataBaseUser.getPassword())
+				);
+		}
 		
+		//-----------------------------------
+		
+		@Test
+		void saveOrUpdate_withDifferentValidDatas_returnUpdatedUser() throws DALException, BLLException
+		{
+			
+			//-----------------------------------------------
+			//set up mock
+			
+			Optional<User> optionalDatabaseUser = Optional.of(dataBaseUser);
+			
+			//-----------------------------------------------
+			//set up test
+			
+			User updateUser = new User();
+			updateUser.setId(1);
+			updateUser.setName("userNewName");
+			updateUser.setLastname("userNewLastName");
+			updateUser.setEmail("userNewEmail@mail.com");
+			updateUser.setPassword("NewValidPassword1!");
+			updateUser.setRole("cust");
+			
+			Mockito.when(this.dao.findById(updateUser.getId())).thenReturn(optionalDatabaseUser);
+			Mockito.when(this.dao.save(updateUser)).thenReturn(updateUser);
+			
+			//-----------------------------------------------
+			//execute action
+			
+			this.userBLL.saveOrUpdate(updateUser);
+			
+			//-----------------------------------------------
+			//assert
+			
+			assertAll("update user with different valids credentials should return updated user",
+				    () -> assertNotEquals(updateUser.getName(), dataBaseUser.getName()),
+				    () -> assertNotEquals(updateUser.getLastname(), dataBaseUser.getLastname()),
+				    () -> assertNotEquals(updateUser.getEmail(), dataBaseUser.getEmail()),
+				    () -> assertNotEquals(updateUser.getRole(), dataBaseUser.getRole()),
+				    () -> assertNotEquals(updateUser.getPassword(), dataBaseUser.getPassword())
+				);
+		}
+		
+		//-----------------------------------
+		
+		@Test
+		void saveOrUpdate_withUserIdThatDoNotExist_throwBLLException() throws DALException, BLLException
+		{
+			//-----------------------------------------------
+			//set up mock
+			
+			Optional<User> noUser = Optional.empty();
+			
+			//-----------------------------------------------
+			//set up test
+			
+			User userthatDoNotExist = new User();
+			userthatDoNotExist.setId(2);
+			userthatDoNotExist.setName("userNewName");
+			userthatDoNotExist.setLastname("userNewLastName");
+			userthatDoNotExist.setEmail("userNewEmail@mail.com");
+			userthatDoNotExist.setPassword("NewValidPassword1!");
+			userthatDoNotExist.setRole("cust");
+			
+			
+			Mockito.when(this.dao.findById(userthatDoNotExist.getId())).thenReturn(noUser);
+			
+			//-----------------------------------------------
+			//assert
+			
+			assertThrows(BLLException.class, ()-> this.userBLL.saveOrUpdate(userthatDoNotExist), "update with id that do not existe should throw BLLException");
+			
+			
+		}
+		
+	
 		
 	}
 
