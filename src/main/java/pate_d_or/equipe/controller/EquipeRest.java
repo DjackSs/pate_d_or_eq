@@ -378,26 +378,6 @@ public class EquipeRest
 	
 	//-----------------------------------------
 	
-	@PutMapping("/commande/{id}/ajouter-plats")
-	public ResponseEntity<?> updateDishes(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) 
-	{
-		restaurantOrder.setId(id);
-		
-		try
-		{	
-			restaurantOrderBll.updateDishes(restaurantOrder);
-			return new ResponseEntity<>(HttpStatus.OK);
-			
-		}
-		catch(BLLException error)
-		{
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
-		}
-		
-	}
-	
-	//-----------------------------------------
-	
 	@DeleteMapping("/commande/{id}")
 	public ResponseEntity<RestaurantOrder> deleteOrder(@PathVariable("id") int id) 
 	{

@@ -104,63 +104,43 @@ public class RestaurantOrderBLL
 		{
 			bll.addError("state", "Etat de la commande invalide");
 		}
-		else
-		{
-			if(oldOrder != null)
-			{
-				oldOrder.setState(restaurantOrder.getState());
-			}
-		}
+		
 		
 		//table
 		if(restaurantOrder.getTable() == null && oldOrder == null)
 		{
 			bll.addError("table", "Table requise pour ouvrir une commande");
 		}
+		else if(oldOrder == null)
+		{
+			if(this.getByTableId(restaurantOrder.getTable().getId()) != null)
+			{
+				bll.addError("table", "Une seule commande par table");
+			}
+			
+		}
+		else
+		{
+			restaurantOrder.setTable(oldOrder.getTable());
+		}
 		
+		//dishes
+		if(oldOrder != null && restaurantOrder.getDishes() == null)
+		{
+			restaurantOrder.setDishes(oldOrder.getDishes());
+		}
+			
 		
 		if(bll.getErrors().size() != 0) {
 			throw bll;
 		}
 		
 		
-		if(oldOrder != null)
-		{
-			restaurantOrderDao.save(oldOrder);
-		}
-		else
-		{
-			restaurantOrderDao.save(restaurantOrder);
-		}
+		restaurantOrderDao.save(restaurantOrder);
+		
 		
 	}
 	
-	//--------------------------------------------------------------------
-	
-	public void updateDishes(RestaurantOrder restaurantOrder) throws BLLException 
-	{
-		BLLException bll = new BLLException();
-		
-		RestaurantOrder restaurantOrderToUpdate = null;
-		
-		try
-		{
-			restaurantOrderToUpdate = this.getById(restaurantOrder.getId());
-			
-		}
-		catch (BLLException error)
-		{
-			bll.addError("order", "commande inconnu");
-			throw bll;
-		
-		}
-		
-		restaurantOrderToUpdate.setDishes(restaurantOrder.getDishes());
-		
-		restaurantOrderDao.save(restaurantOrderToUpdate);
-
-		
-	}
 	
 	//--------------------------------------------------------------------
 	
