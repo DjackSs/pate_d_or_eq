@@ -255,7 +255,99 @@ class RestaurantOrderBLLTest
 		
 		//-----------------------------------
 		
+		@Test
+		void save_withDifferentStateAndDifferentDishes_returnUpdatedRestaurantOrder() throws DALException, BLLException
+		{
+			
+			//-----------------------------------------------
+			//set up mock
+			
+			Optional<RestaurantOrder> optionalDataOrder = Optional.of(dataOrder);
+			
+			//-----------------------------------------------
+			//set up test
+			
+			Dish dish3 = new Dish();
+			dish3.setId(3);
+			Dish dish4 = new Dish();
+			dish4.setId(4);
+			Dish dish5 = new Dish();
+			dish5.setId(5);
+			
+			List<Dish> dishes = new ArrayList<>();
+			dishes.add(dish3);
+			dishes.add(dish4);
+			dishes.add(dish5);
+			
+			RestaurantOrder updateOrder = new RestaurantOrder();
+			updateOrder.setId(1);
+			updateOrder.setState("read");
+			updateOrder.setDishes(dishes);
+			
+			
+			Mockito.when(this.dao.findById(updateOrder.getId())).thenReturn(optionalDataOrder);
+			Mockito.when(this.dao.save(updateOrder)).thenReturn(updateOrder);
+			
+			//-----------------------------------------------
+			//execute action
+			
+			this.restaurantOrderBLL.save(updateOrder);
+			
+			//-----------------------------------------------
+			//assert
+			
+			assertAll("update RestaurantOrder with different valids informations should return updated RestaurantOrder",
+					() -> assertNotEquals(updateOrder.getState(), dataOrder.getState()),
+				    () -> assertEquals(updateOrder.getTable().getId(), dataOrder.getTable().getId()),
+				    () -> assertNotEquals(updateOrder.getDishes().size(), dataOrder.getDishes().size())
+				);
+		}
+		
+		//-----------------------------------
+		
+		@Test
+		void save_withRestaurantOrderIdThatDoNotExist_throwBLLException() throws DALException, BLLException
+		{
+			//-----------------------------------------------
+			//set up mock
+			
+			Optional<RestaurantOrder> noDataOrder = Optional.empty();
+			
+			//-----------------------------------------------
+			//set up test
+			
+			Dish dish3 = new Dish();
+			dish3.setId(3);
+			Dish dish4 = new Dish();
+			dish4.setId(4);
+			Dish dish5 = new Dish();
+			dish5.setId(5);
+			
+			List<Dish> dishes = new ArrayList<>();
+			dishes.add(dish3);
+			dishes.add(dish4);
+			dishes.add(dish5);
+			
+			RestaurantOrder updateOrder = new RestaurantOrder();
+			updateOrder.setId(-1);
+			updateOrder.setState("read");
+			updateOrder.setDishes(dishes);
+			
+			
+			Mockito.when(this.dao.findById(updateOrder.getId())).thenReturn(noDataOrder);
+			Mockito.when(this.dao.save(updateOrder)).thenReturn(updateOrder);
+			
+			//-----------------------------------------------
+			//assert
+			
+			assertThrows(BLLException.class, ()-> this.restaurantOrderBLL.save(updateOrder), "update with id that do not existe should throw BLLException");
+			
+			
+		}
+		
 	}
+	
+	
 
 
 

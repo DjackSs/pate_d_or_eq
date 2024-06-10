@@ -141,32 +141,6 @@ public class RestaurantOrderBLL
 		
 	}
 	
-	//--------------------------------------------------------------------
-	
-	public void updateDishes(RestaurantOrder restaurantOrder) throws BLLException 
-	{
-		BLLException bll = new BLLException();
-		
-		RestaurantOrder restaurantOrderToUpdate = null;
-		
-		try
-		{
-			restaurantOrderToUpdate = this.getById(restaurantOrder.getId());
-			
-		}
-		catch (BLLException error)
-		{
-			bll.addError("order", "commande inconnu");
-			throw bll;
-		
-		}
-		
-		restaurantOrderToUpdate.setDishes(restaurantOrder.getDishes());
-		
-		restaurantOrderDao.save(restaurantOrderToUpdate);
-
-		
-	}
 	
 	//--------------------------------------------------------------------
 	
