@@ -2,7 +2,6 @@ package pate_d_or.equipe.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,7 +59,7 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@GetMapping("/resa/{id}")
-	public ResponseEntity<?> findResaById(@PathVariable("id") int id) 
+	public ResponseEntity<Reservation> findResaById(@PathVariable("id") int id) 
 	{
 		try
 		{
@@ -68,7 +67,7 @@ public class EquipeRest
 		}
 		catch (BLLException error)
 		{
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.NOT_FOUND);
 		}
 		
 	}
@@ -87,7 +86,7 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@PutMapping("/resa/{id}")
-	public ResponseEntity<?> updateReservation(@PathVariable("id") int id, @RequestBody Reservation reservation)
+	public ResponseEntity<Void> updateReservation(@PathVariable("id") int id, @RequestBody Reservation reservation)
 	{
 		try
 		{
@@ -101,12 +100,11 @@ public class EquipeRest
 			{
 				if("reservationState".equals(errorType))
 				{
-					return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
-					
+					throw new ApiCustomException(error.getErrors(),HttpStatus.BAD_REQUEST);
 				}
 			}
 			
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.NOT_FOUND);
 		}
 		
 		
@@ -124,7 +122,7 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@GetMapping("/table/{id}")
-	public ResponseEntity<?> findById(@PathVariable("id") int id)
+	public ResponseEntity<RestaurantTable> findById(@PathVariable("id") int id)
 	{
 		try
 		{
@@ -132,15 +130,10 @@ public class EquipeRest
 		}
 		catch(BLLException error)
 		{
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.NOT_FOUND);
 			
 		}
 		
-	}
-	
-	public ResponseEntity<Object> restException(Map<String,String> errors, HttpStatus errorCode)
-	{
-		return new ResponseEntity<>(errors, errorCode);
 	}
 	
 	
@@ -155,7 +148,7 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@PutMapping("/table/{id}")
-	public ResponseEntity<?> updateRestaurantTable(@PathVariable("id") int id, @RequestBody RestaurantTable restaurantTable)
+	public ResponseEntity<Void> updateRestaurantTable(@PathVariable("id") int id, @RequestBody RestaurantTable restaurantTable)
 	{
 		try
 		{
@@ -169,12 +162,12 @@ public class EquipeRest
 			{
 				if("tableState".equals(errorType))
 				{
-					return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+					throw new ApiCustomException(error.getErrors(),HttpStatus.BAD_REQUEST);
 					
 				}
 			}
 			
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.NOT_FOUND);
 			
 		}
 		
@@ -193,7 +186,7 @@ public class EquipeRest
 	//-----------------------------------------
 
 	@GetMapping("/user/{id}")
-	public ResponseEntity<?> getUserById(@PathVariable("id") int id) 
+	public ResponseEntity<User> getUserById(@PathVariable("id") int id) 
 	{
 		try
 		{
@@ -201,7 +194,7 @@ public class EquipeRest
 		}
 		catch (BLLException error)
 		{
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.NOT_FOUND);
 		}
 		
 	}
@@ -209,7 +202,7 @@ public class EquipeRest
 	//-----------------------------------------
 
 	@PostMapping("/user")
-	public ResponseEntity<?> insertUser(@RequestBody User user) throws BLLException 
+	public ResponseEntity<User> insertUser(@RequestBody User user) throws BLLException 
 	{
 		
 		try 
@@ -220,7 +213,7 @@ public class EquipeRest
 		catch (BLLException error) 
 		{
 			
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.BAD_REQUEST);
 		}
 			
 		
@@ -234,7 +227,7 @@ public class EquipeRest
 	 * Renvoie un user avec son token si la connexion réussit
 	 */
 	@PostMapping("/user/login")
-	public ResponseEntity<?> get(@RequestBody User user)
+	public ResponseEntity<User> get(@RequestBody User user)
 	{
 		try
 		{
@@ -242,9 +235,9 @@ public class EquipeRest
 		}
 		catch(BLLException error)
 		{
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.UNAUTHORIZED);
-			
+			throw new ApiCustomException(error.getErrors(),HttpStatus.UNAUTHORIZED);
 		}
+			
 		
 	}
 	
@@ -262,7 +255,7 @@ public class EquipeRest
 	//-----------------------------------------
 
 	@PutMapping("/user/{id}")
-	public ResponseEntity<?> updateUser(@PathVariable("id") int id, @RequestBody User user)
+	public ResponseEntity<User> updateUser(@PathVariable("id") int id, @RequestBody User user)
 	{
 		user.setId(id);
 		
@@ -274,7 +267,7 @@ public class EquipeRest
 		catch (BLLException error) 
 		{
 			
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.BAD_REQUEST);
 		}
 		
 		
@@ -301,15 +294,15 @@ public class EquipeRest
 	//-----------------------------------------
 		
 	@GetMapping("/commande/{id}")
-	public ResponseEntity<?> getById(@PathVariable("id") int id) 
+	public ResponseEntity<RestaurantOrder> getById(@PathVariable("id") int id) 
 	{
 		try
 		{
-			return new ResponseEntity<>(restaurantOrderBll.getById(id), HttpStatus.OK);
+			return new ResponseEntity<RestaurantOrder>(restaurantOrderBll.getById(id), HttpStatus.OK);
 		}
 		catch (BLLException error)
 		{
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.NOT_FOUND);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.NOT_FOUND);
 		}
 		
 	}
@@ -317,7 +310,8 @@ public class EquipeRest
 	//-----------------------------------------
 
 	@GetMapping("/commande/resto/{id}")
-	public ResponseEntity<List<BillDTO>> getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(@PathVariable("id") int idRestaurant) {
+	public ResponseEntity<List<BillDTO>> getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(@PathVariable("id") int idRestaurant) 
+	{
 		return new ResponseEntity<>(this.restaurantOrderBll.getDetailBillWhereStateSoldByOrderByIdTableAndByRestaurantId(idRestaurant), HttpStatus.OK);
 	}
 	
@@ -341,17 +335,17 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@PostMapping("/commande")
-	public ResponseEntity<?> insert(@RequestBody RestaurantOrder restaurantOrder) 
+	public ResponseEntity<RestaurantOrder> insert(@RequestBody RestaurantOrder restaurantOrder) 
 	{
 		try
 		{
 			restaurantOrderBll.save(restaurantOrder);
-			return new ResponseEntity<>(restaurantOrder, HttpStatus.CREATED);
+			return new ResponseEntity<RestaurantOrder>(restaurantOrder, HttpStatus.CREATED);
 			
 		}
 		catch(BLLException error)
 		{
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.BAD_REQUEST);
 		}
 		
 	}
@@ -359,19 +353,19 @@ public class EquipeRest
 	//-----------------------------------------
 	
 	@PutMapping("/commande/{id}")
-	public ResponseEntity<?> updateState(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) 
+	public ResponseEntity<RestaurantOrder> updateState(@PathVariable("id") int id, @RequestBody RestaurantOrder restaurantOrder) 
 	{
 		restaurantOrder.setId(id);
 		
 		try
 		{
 			restaurantOrderBll.save(restaurantOrder);
-			return new ResponseEntity<>(restaurantOrder, HttpStatus.OK);
+			return new ResponseEntity<RestaurantOrder>(restaurantOrder, HttpStatus.OK);
 			
 		}
 		catch(BLLException error)
 		{
-			return new ResponseEntity<Map<String,String>>(error.getErrors(), HttpStatus.BAD_REQUEST);
+			throw new ApiCustomException(error.getErrors(),HttpStatus.BAD_REQUEST);
 		}
 		
 	}
