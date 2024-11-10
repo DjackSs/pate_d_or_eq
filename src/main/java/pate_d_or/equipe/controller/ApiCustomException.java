@@ -8,8 +8,8 @@ public class ApiCustomException extends RuntimeException
 {
 	private static final long serialVersionUID = 6329398917499278863L;
 	
-	private Map<String,String> errors;
-	private HttpStatus status;
+	private final Map<String,String> errors;
+	private final HttpStatus status;
 	
 	public ApiCustomException(String message)
 	{
